@@ -1,5 +1,7 @@
 extends GravityBody
 
+const EDIT_TOOL_PADDING: Vector2 = Vector2(70, 70)
+
 var STAR_TYPES : Dictionary = {
 	0:  {"name": "Yellow Dwarf"},
 	1:  {"name": "Orange Dwarf"},
@@ -7,28 +9,40 @@ var STAR_TYPES : Dictionary = {
 	3 : {"name": "Blue Giant"}
 }
 
-var type : int
+var type : int = 0
+
+@onready var sprite : AnimatedSprite2D = $Sprite
+@onready var collision_shape_2d : CollisionShape2D = $Area2D/CollisionShape2D
+@onready var edit_tools : EditTools = $EditTools
 
 signal selected_body(GravityBody)
 signal body_deleted(GravityBody)
 signal body_move(GravityBody)
 
-func set_type(newType : int):
+
+# SETUP & STATE
+# -------------------------------------------------
+
+func set_type(newType : int) -> void:
 	type = STAR_TYPES.size() - 1 - newType
-	$Sprite.frame = type
-	var newScale = (type + 2 + randf_range(-0.2, 0.2))
-	$Sprite.scale = Vector2(newScale, newScale)
-	$Area2D/CollisionShape2D.shape.radius = sprite_base_size.x * newScale
+	sprite.frame = type
+	var newScale = type + 2 + randf_range(-0.2, 0.2)
+	sprite.scale = Vector2(newScale, newScale)
+	collision_shape_2d.shape.radius = sprite_base_size.x * newScale
 	
-	$EditTools.size = sprite_base_size * newScale + Vector2(70, 70)
-	$EditTools.position = Vector2(-$EditTools.size.x / 2, -$EditTools.size.y / 2)
-	$EditTools/BodyName.text = STAR_TYPES[type].name
+	edit_tools.size = sprite_base_size * newScale + EDIT_TOOL_PADDING
+	edit_tools.position = Vector2(-edit_tools.size.x / 2, -edit_tools.size.y / 2)
+	edit_tools.set_body_name(STAR_TYPES[type].name)
 
-func select():
-	$EditTools.show()
+func select() -> void:
+	edit_tools.show()
 
-func unselect():
-	$EditTools.hide()
+func unselect() -> void:
+	edit_tools.hide()
+
+
+# SIGNAL CALLBACKS
+# -------------------------------------------------
 
 func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if not placed:

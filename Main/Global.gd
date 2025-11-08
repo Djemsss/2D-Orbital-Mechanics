@@ -1,3 +1,3 @@
 extends Node
 
-var gravitational_constant = 9.8
+var gravitational_constant = 98

@@ -1,7 +1,12 @@
 extends Control
+class_name EditTools
 
 signal pressed_move
 signal pressed_delete
+
+
+# SIGNAL CALLBACKS
+# -------------------------------------------------
 
 func _on_move_button_mouse_entered() -> void:
 	$HBox/MoveButton.modulate = Color.GREEN

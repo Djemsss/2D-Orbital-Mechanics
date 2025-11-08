@@ -1,0 +1,41 @@
+[gd_scene load_steps=8 format=3 uid="uid://cqpu1p618b2ym"]
+
+[ext_resource type="Script" uid="uid://dhebink5cv0fx" path="res://Elements/satellite.gd" id="1_twluq"]
+[ext_resource type="Texture2D" uid="uid://dwop4tarinyl6" path="res://Assets/img/Satellites/sprite_1.png" id="2_4h4dh"]
+[ext_resource type="Texture2D" uid="uid://ocsa5mlqcd6t" path="res://Assets/img/Satellites/sprite_2.png" id="3_0j0kh"]
+[ext_resource type="Texture2D" uid="uid://ccejnsgngvt34" path="res://Assets/img/Satellites/sprite_3.png" id="4_vui48"]
+[ext_resource type="Texture2D" uid="uid://s5rdkq22w886" path="res://Assets/img/Satellites/sprite_4.png" id="5_jhuwi"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4h4dh"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ve0xn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_4h4dh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_0j0kh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_vui48")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_jhuwi")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Satellite" type="Node2D"]
+script = ExtResource("1_twluq")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_4h4dh")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_ve0xn")
