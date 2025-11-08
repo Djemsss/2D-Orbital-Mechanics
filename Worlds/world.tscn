@@ -1,0 +1,160 @@
+[gd_scene load_steps=8 format=3 uid="uid://bxapoxbkcvb4p"]
+
+[ext_resource type="Script" uid="uid://ckqwsx33cum74" path="res://Worlds/world.gd" id="1_4xfh2"]
+[ext_resource type="PackedScene" uid="uid://dlmls5pipfmug" path="res://UI/vertical_unfold.tscn" id="1_bl0d6"]
+[ext_resource type="Texture2D" uid="uid://8wclfm2h7740" path="res://Assets/img/Stars/sprite_2.png" id="3_fuoa0"]
+[ext_resource type="Texture2D" uid="uid://c32wj42rde1kh" path="res://Assets/img/Stars/sprite_1.png" id="4_04avt"]
+[ext_resource type="Texture2D" uid="uid://b471vapp7bdv2" path="res://Assets/img/Stars/sprite_3.png" id="4_r1b28"]
+[ext_resource type="Texture2D" uid="uid://boenug8daqk3w" path="res://Assets/img/Stars/sprite_4.png" id="5_04avt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r1b28"]
+bg_color = Color(0.235878, 0.570313, 0.557545, 1)
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_4xfh2")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ActionBar" type="Panel" parent="CanvasLayer/Control"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -120.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_r1b28")
+
+[node name="HBox" type="HBoxContainer" parent="CanvasLayer/Control/ActionBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="StarUnfold" parent="CanvasLayer/Control/ActionBar/HBox" instance=ExtResource("1_bl0d6")]
+layout_mode = 2
+
+[node name="VBox" parent="CanvasLayer/Control/ActionBar/HBox/StarUnfold/Panel" index="1"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -1122.0
+offset_right = 60.0
+offset_bottom = -122.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/StarUnfold/Panel/VBox/Button" index="0"]
+texture = ExtResource("5_04avt")
+
+[node name="Button2" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/StarUnfold/Panel/VBox" index="1"]
+clip_contents = true
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/StarUnfold/Panel/VBox/Button2"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_r1b28")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button3" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/StarUnfold/Panel/VBox" index="2"]
+clip_contents = true
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/StarUnfold/Panel/VBox/Button3"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_fuoa0")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button4" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/StarUnfold/Panel/VBox" index="3"]
+clip_contents = true
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/StarUnfold/Panel/VBox/Button4"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_04avt")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BG" type="ColorRect" parent="."]
+z_index = -5
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Elements" type="Node2D" parent="."]
+
+[node name="Stars" type="Node2D" parent="Elements"]
+
+[connection signal="pressed_button" from="CanvasLayer/Control/ActionBar/HBox/StarUnfold" to="." method="_on_star_unfold_pressed_button"]
+
+[editable path="CanvasLayer/Control/ActionBar/HBox/StarUnfold"]

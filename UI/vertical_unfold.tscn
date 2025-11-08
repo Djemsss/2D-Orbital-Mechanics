@@ -1,0 +1,120 @@
+[gd_scene load_steps=5 format=3 uid="uid://dlmls5pipfmug"]
+
+[ext_resource type="Script" uid="uid://by2shlu1nhlxt" path="res://UI/vertical_unfold.gd" id="1_fm0xu"]
+[ext_resource type="Texture2D" uid="uid://c32wj42rde1kh" path="res://Assets/img/Stars/sprite_1.png" id="2_0isxi"]
+[ext_resource type="Texture2D" uid="uid://wp25edh1s72u" path="res://Assets/img/Icons/ArrowDown.png" id="3_ep2ur"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0isxi"]
+
+[node name="VerticalUnfold" type="Control"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 3
+anchors_preset = 0
+offset_left = 919.0
+offset_top = 660.0
+offset_right = 1019.0
+offset_bottom = 760.0
+size_flags_horizontal = 6
+size_flags_vertical = 4
+script = ExtResource("1_fm0xu")
+
+[node name="Panel" type="Panel" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DeployButton" type="Panel" parent="Panel"]
+clip_contents = true
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -120.0
+offset_right = 60.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 6
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0isxi")
+
+[node name="DeployIcon" type="TextureRect" parent="Panel/DeployButton"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_0isxi")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CloseIcon" type="TextureRect" parent="Panel/DeployButton"]
+visible = false
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_ep2ur")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+clip_contents = true
+custom_minimum_size = Vector2(100, 1000)
+layout_mode = 2
+offset_top = -1002.0
+offset_right = 120.0
+offset_bottom = -2.0
+size_flags_horizontal = 6
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+alignment = 2
+
+[node name="Button" type="Panel" parent="Panel/VBox"]
+clip_contents = true
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="Panel/VBox/Button"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_0isxi")
+expand_mode = 1
+stretch_mode = 5

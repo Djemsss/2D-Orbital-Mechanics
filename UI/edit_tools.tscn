@@ -1,0 +1,76 @@
+[gd_scene load_steps=4 format=3 uid="uid://cwi20kh8j71f2"]
+
+[ext_resource type="Script" uid="uid://btri2csmb2ljq" path="res://UI/edit_tools.gd" id="1_816dd"]
+[ext_resource type="Texture2D" uid="uid://behwbcfj4kieu" path="res://Assets/img/Icons/Move.png" id="1_ctn46"]
+[ext_resource type="Texture2D" uid="uid://djvf5npbj4da" path="res://Assets/img/Icons/Trash.png" id="2_816dd"]
+
+[node name="EditTools" type="Control"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -74.0
+offset_top = -50.0
+offset_right = 74.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+script = ExtResource("1_816dd")
+
+[node name="BodyName" type="Label" parent="."]
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -50.0
+offset_right = 50.0
+offset_bottom = 30.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -22.0
+offset_top = -44.0
+offset_right = 22.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 0
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="MoveButton" type="TextureRect" parent="HBox"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+mouse_filter = 0
+texture = ExtResource("1_ctn46")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TrashButton" type="TextureRect" parent="HBox"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+mouse_filter = 0
+texture = ExtResource("2_816dd")
+expand_mode = 1
+stretch_mode = 5
+
+[connection signal="gui_input" from="HBox/MoveButton" to="." method="_on_move_button_gui_input"]
+[connection signal="mouse_entered" from="HBox/MoveButton" to="." method="_on_move_button_mouse_entered"]
+[connection signal="mouse_exited" from="HBox/MoveButton" to="." method="_on_move_button_mouse_exited"]
+[connection signal="gui_input" from="HBox/TrashButton" to="." method="_on_trash_button_gui_input"]
+[connection signal="mouse_entered" from="HBox/TrashButton" to="." method="_on_trash_button_mouse_entered"]
+[connection signal="mouse_exited" from="HBox/TrashButton" to="." method="_on_trash_button_mouse_exited"]
