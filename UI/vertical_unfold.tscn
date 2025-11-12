@@ -1,19 +1,24 @@
-[gd_scene load_steps=5 format=3 uid="uid://dlmls5pipfmug"]
+[gd_scene load_steps=7 format=3 uid="uid://dlmls5pipfmug"]
 
 [ext_resource type="Script" uid="uid://by2shlu1nhlxt" path="res://UI/vertical_unfold.gd" id="1_fm0xu"]
 [ext_resource type="Texture2D" uid="uid://c32wj42rde1kh" path="res://Assets/img/Stars/sprite_1.png" id="2_0isxi"]
 [ext_resource type="Texture2D" uid="uid://wp25edh1s72u" path="res://Assets/img/Icons/ArrowDown.png" id="3_ep2ur"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0isxi"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ep2ur"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ep2ur"]
+bg_color = Color(0, 0.694116, 0.764706, 0.231373)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i20xb"]
 
 [node name="VerticalUnfold" type="Control"]
-custom_minimum_size = Vector2(120, 120)
+custom_minimum_size = Vector2(80, 80)
 layout_mode = 3
 anchors_preset = 0
 offset_left = 919.0
 offset_top = 660.0
-offset_right = 1019.0
-offset_bottom = 760.0
+offset_right = 999.0
+offset_bottom = 740.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 script = ExtResource("1_fm0xu")
@@ -26,38 +31,39 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_ep2ur")
 
 [node name="DeployButton" type="Panel" parent="Panel"]
 clip_contents = true
-custom_minimum_size = Vector2(120, 120)
+custom_minimum_size = Vector2(80, 80)
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -60.0
-offset_top = -120.0
-offset_right = 60.0
+offset_left = -40.0
+offset_top = -80.0
+offset_right = 40.0
 grow_horizontal = 2
 grow_vertical = 0
 size_flags_horizontal = 6
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxEmpty_0isxi")
+theme_override_styles/panel = SubResource("StyleBoxFlat_ep2ur")
 
 [node name="DeployIcon" type="TextureRect" parent="Panel/DeployButton"]
 texture_filter = 1
-custom_minimum_size = Vector2(100, 100)
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = -40.0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_0isxi")
@@ -67,17 +73,17 @@ stretch_mode = 5
 [node name="CloseIcon" type="TextureRect" parent="Panel/DeployButton"]
 visible = false
 texture_filter = 1
-custom_minimum_size = Vector2(100, 100)
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = -40.0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("3_ep2ur")
@@ -86,17 +92,17 @@ stretch_mode = 5
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 clip_contents = true
-custom_minimum_size = Vector2(100, 1000)
+custom_minimum_size = Vector2(80, 1000)
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -60.0
-offset_top = -1122.0
-offset_right = 60.0
-offset_bottom = -122.0
+offset_left = -40.0
+offset_top = -1082.0
+offset_right = 40.0
+offset_bottom = -82.0
 grow_horizontal = 2
 grow_vertical = 0
 size_flags_horizontal = 6
@@ -106,25 +112,37 @@ alignment = 2
 
 [node name="Button" type="Panel" parent="Panel/VBox"]
 clip_contents = true
-custom_minimum_size = Vector2(120, 120)
+custom_minimum_size = Vector2(80, 80)
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxEmpty_i20xb")
 
 [node name="TextureRect" type="TextureRect" parent="Panel/VBox/Button"]
-custom_minimum_size = Vector2(80, 80)
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = -40.0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_0isxi")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="HintLabel" type="Label" parent="."]
+visible = false
+custom_minimum_size = Vector2(200, 30)
+layout_mode = 0
+offset_left = 88.0
+offset_top = 24.0
+offset_right = 288.0
+offset_bottom = 54.0
+text = " Blue Giant"
+vertical_alignment = 1

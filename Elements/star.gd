@@ -1,4 +1,5 @@
 extends GravityBody
+class_name Star
 
 const EDIT_TOOL_PADDING: Vector2 = Vector2(70, 70)
 
@@ -23,12 +24,16 @@ signal body_move(GravityBody)
 # SETUP & STATE
 # -------------------------------------------------
 
+func place():
+	placed = true
+	$Area2D/CollisionShape2D.set_deferred("disabled", false)
+
 func set_type(newType : int) -> void:
 	type = STAR_TYPES.size() - 1 - newType
 	sprite.frame = type
 	var newScale = type + 2 + randf_range(-0.2, 0.2)
-	sprite.scale = Vector2(newScale, newScale)
-	collision_shape_2d.shape.radius = sprite_base_size.x * newScale
+	sprite.scale = Vector2(newScale, newScale) / 5.5
+	collision_shape_2d.shape.radius = sprite_base_size.x * newScale / 2
 	
 	edit_tools.size = sprite_base_size * newScale + EDIT_TOOL_PADDING
 	edit_tools.position = Vector2(-edit_tools.size.x / 2, -edit_tools.size.y / 2)
@@ -57,3 +62,7 @@ func _on_edit_tools_pressed_delete() -> void:
 
 func _on_edit_tools_pressed_move() -> void:
 	emit_signal("body_move", self)
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body is Debris or (body is Satellite and body.placed):
+		body.queue_free()

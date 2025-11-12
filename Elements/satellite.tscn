@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cqpu1p618b2ym"]
+[gd_scene load_steps=10 format=3 uid="uid://cqpu1p618b2ym"]
 
 [ext_resource type="Script" uid="uid://dhebink5cv0fx" path="res://Elements/satellite.gd" id="1_twluq"]
 [ext_resource type="Texture2D" uid="uid://dwop4tarinyl6" path="res://Assets/img/Satellites/sprite_1.png" id="2_4h4dh"]
@@ -28,14 +28,29 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Satellite" type="Node2D"]
+[sub_resource type="Curve" id="Curve_4h4dh"]
+_data = [Vector2(0, 0.202247), 0.0, 0.0, 0, 0, Vector2(0.772358, 0.382023), 0.674157, 0.674157, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_4h4dh"]
+resource_local_to_scene = true
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1)
+
+[node name="Satellite" type="CharacterBody2D"]
+motion_mode = 1
 script = ExtResource("1_twluq")
 
-[node name="Area2D" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_4h4dh")
+disabled = true
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_ve0xn")
+
+[node name="Node" type="Node" parent="."]
+
+[node name="Line2D" type="Line2D" parent="Node"]
+width = 3.0
+width_curve = SubResource("Curve_4h4dh")
+gradient = SubResource("Gradient_4h4dh")

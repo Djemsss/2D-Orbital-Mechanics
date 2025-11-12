@@ -4,6 +4,8 @@ class_name EditTools
 signal pressed_move
 signal pressed_delete
 
+func set_body_name(body_name : String) -> void:
+	$BodyName.text = body_name
 
 # SIGNAL CALLBACKS
 # -------------------------------------------------

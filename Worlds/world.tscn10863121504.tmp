@@ -37,6 +37,7 @@ height = 1080
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_4xfh2")
+placing_mode_time = null
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

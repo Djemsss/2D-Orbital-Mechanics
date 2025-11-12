@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://dyptjwfvq0ijh"]
+
+[ext_resource type="Script" uid="uid://w8u2cwhpj348" path="res://Elements/debris.gd" id="1_f8870"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0j0kh"]
+radius = 2.0
+
+[node name="Debris" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_f8870")
+
+[node name="Polygon" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-2, -2, 2, -2, 2, 2, -2, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_0j0kh")

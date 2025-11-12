@@ -1,3 +1,5 @@
 extends Node
 
-var gravitational_constant = 98
+const debris_scene = preload("res://Elements/debris.tscn")
+
+var gravitational_constant = 9.8
