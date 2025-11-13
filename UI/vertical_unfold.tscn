@@ -7,7 +7,7 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ep2ur"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ep2ur"]
-bg_color = Color(0, 0.694116, 0.764706, 0.231373)
+bg_color = Color(0.502859, 0.612931, 0.764706, 0.231373)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i20xb"]
 

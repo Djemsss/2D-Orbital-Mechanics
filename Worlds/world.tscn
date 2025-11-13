@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bxapoxbkcvb4p"]
+[gd_scene load_steps=20 format=3 uid="uid://bxapoxbkcvb4p"]
 
 [ext_resource type="Script" uid="uid://ckqwsx33cum74" path="res://Worlds/world.gd" id="1_4xfh2"]
 [ext_resource type="PackedScene" uid="uid://dlmls5pipfmug" path="res://UI/vertical_unfold.tscn" id="1_bl0d6"]
@@ -9,9 +9,12 @@
 [ext_resource type="Texture2D" uid="uid://dwop4tarinyl6" path="res://Assets/img/Satellites/sprite_1.png" id="7_07imi"]
 [ext_resource type="Shader" uid="uid://u6vcjlje6tqg" path="res://Shaders/StarBG.gdshader" id="8_hdcsk"]
 [ext_resource type="Script" uid="uid://ch4oiioabrx0v" path="res://Worlds/camera_2d.gd" id="8_w2mg1"]
+[ext_resource type="Texture2D" uid="uid://benwv3eahhraa" path="res://Assets/img/Grid.png" id="10_4qppp"]
+[ext_resource type="Shader" uid="uid://e8s3l4jkw6ht" path="res://Shaders/AlphaCutout.gdshader" id="10_qxe63"]
+[ext_resource type="Shader" uid="uid://dwtoak71wttwh" path="res://Shaders/GravityGrid.gdshader" id="12_25de1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w2mg1"]
-bg_color = Color(0, 0.694116, 0.764706, 0.231373)
+bg_color = Color(0.502859, 0.612931, 0.764706, 0.231373)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w2mg1"]
 shader = ExtResource("8_hdcsk")
@@ -34,6 +37,30 @@ shader_parameter/world_offset = Vector2(0, 0)
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_4qppp"]
 width = 1920
 height = 1080
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_25de1"]
+shader = ExtResource("10_qxe63")
+shader_parameter/circle_center_world = Vector2(500, 500)
+shader_parameter/circle_radius = 20.0
+shader_parameter/fade_width = 400.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5n3ns"]
+shader = ExtResource("12_25de1")
+shader_parameter/tint_color = Color(0.313033, 0.803086, 1, 1)
+shader_parameter/alpha_value = 0.2
+shader_parameter/point_count = 1
+shader_parameter/points = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/masses = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/influence_radius = 500.0
+shader_parameter/pinch_strength = -0.1
+
+[sub_resource type="Curve" id="Curve_4qppp"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_w2mg1"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_4xfh2")
@@ -161,11 +188,11 @@ texture = ExtResource("7_07imi")
 texture = ExtResource("7_07imi")
 
 [node name="Panel" type="Panel" parent="CanvasLayer/Control"]
-custom_minimum_size = Vector2(80, 240)
+custom_minimum_size = Vector2(160, 120)
 layout_mode = 1
 offset_top = 120.0
 offset_right = 80.0
-offset_bottom = 280.0
+offset_bottom = 240.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_w2mg1")
 
 [node name="VBox" type="VBoxContainer" parent="CanvasLayer/Control/Panel"]
@@ -177,19 +204,56 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
 
-[node name="AutoOrbitsToggle" type="CheckButton" parent="CanvasLayer/Control/Panel/VBox"]
-custom_minimum_size = Vector2(80, 80)
+[node name="ContinuosPlacementToggle" type="CheckButton" parent="CanvasLayer/Control/Panel/VBox"]
+custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/Panel/VBox/ContinuosPlacementToggle"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 10
+text = "Continuos Placement"
+vertical_alignment = 1
+
+[node name="AutoOrbitsToggle" type="CheckButton" parent="CanvasLayer/Control/Panel/VBox"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/Panel/VBox/AutoOrbitsToggle"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 10
+text = "Automatic Orbit"
+vertical_alignment = 1
 
 [node name="OrbitDirectionToggle" type="CheckButton" parent="CanvasLayer/Control/Panel/VBox"]
-custom_minimum_size = Vector2(80, 80)
+custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
 
-[node name="ContinuosPlacementToggle" type="CheckButton" parent="CanvasLayer/Control/Panel/VBox"]
-custom_minimum_size = Vector2(80, 80)
-layout_mode = 2
+[node name="Label" type="Label" parent="CanvasLayer/Control/Panel/VBox/OrbitDirectionToggle"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 10
+text = "Orbit Direction"
+vertical_alignment = 1
 
 [node name="Placing" type="Label" parent="CanvasLayer/Control"]
+visible = false
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
@@ -206,8 +270,36 @@ offset_right = 40.0
 offset_bottom = 40.0
 texture = SubResource("NoiseTexture2D_4qppp")
 
+[node name="BG_Grid" type="Sprite2D" parent="."]
+visible = false
+self_modulate = Color(0.497018, 0.947674, 1, 0.513726)
+texture_repeat = 2
+material = SubResource("ShaderMaterial_25de1")
+position = Vector2(960, 540)
+scale = Vector2(2, 2)
+texture = ExtResource("10_4qppp")
+region_enabled = true
+region_rect = Rect2(0, 0, 5120, 5120)
+
+[node name="Gravity_Grid" type="Sprite2D" parent="."]
+texture_repeat = 2
+material = SubResource("ShaderMaterial_5n3ns")
+position = Vector2(960, 540)
+texture = ExtResource("10_4qppp")
+region_enabled = true
+region_rect = Rect2(0, 0, 5120, 5120)
+
 [node name="DragLine" type="Line2D" parent="."]
 width = 5.0
+width_curve = SubResource("Curve_4qppp")
+default_color = Color(1, 0.0737829, 0, 1)
+antialiased = true
+
+[node name="OrbitPreview" type="Line2D" parent="."]
+width = 3.0
+width_curve = SubResource("Curve_w2mg1")
+default_color = Color(0.0265318, 1, 0, 1)
+antialiased = true
 
 [node name="PredictionLine" type="Line2D" parent="."]
 width = 5.0

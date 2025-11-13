@@ -15,6 +15,8 @@ var selected_body: GravityBody = null
 var started_drag: Vector2 = Vector2.ZERO
 var base_actionbar_y := 0.0
 
+var celestial_bodies : Array[GravityBody] = []
+
 @onready var drag_line: Line2D = $DragLine
 @onready var camera: Camera2D = $Camera2D
 @onready var action_bar: Control = $CanvasLayer/Control/ActionBar
@@ -27,15 +29,13 @@ func _ready() -> void:
 	base_actionbar_y = action_bar.position.y
 
 func _physics_process(delta: float) -> void:
-	$CanvasLayer/Control/Placing.text = str(placing)
-	var bodies = $Elements/Stars.get_children()
 	for sat: Satellite in $Elements/Satellites.get_children():
 		if sat.placed:
-			process_sat_gravity(sat, delta, bodies)
+			process_sat_gravity(sat, delta, celestial_bodies)
 			sat.process_trail()
 	
-	for debris in $Elements/Debris.get_children():
-		process_debris_gravity(debris, delta, bodies)
+	for debris : Debris in $Elements/Debris.get_children():
+		process_debris_gravity(debris, delta, celestial_bodies)
 
 func process_sat_gravity(sat : Satellite, delta : float, bodyList : Array):
 	for body in bodyList:
@@ -45,7 +45,6 @@ func process_sat_gravity(sat : Satellite, delta : float, bodyList : Array):
 		var acceleration = force / sat.mass
 		sat.velocity += gravity_dir * acceleration * delta
 		
-	# Move and slide and check for collision
 	if sat.move_and_slide():
 		var collision = sat.get_last_slide_collision()
 		var collider = collision.get_collider()
@@ -63,6 +62,79 @@ func process_debris_gravity(debris : Debris, delta : float, bodyList : Array):
 		debris.velocity += gravity_dir * acceleration * delta
 		
 	debris.move_and_slide()
+	
+	for i in range(debris.get_slide_collision_count()):
+		var col = debris.get_slide_collision(i)
+		var other = col.get_collider()
+		if other is Debris and other != debris:
+			# Vel blending
+			var combined = (debris.velocity * debris.mass + other.velocity * other.mass) / (debris.mass + other.mass)
+			
+			debris.velocity = lerp(debris.velocity, combined, 0.2)
+			other.velocity = lerp(other.velocity, combined, 0.2)
+
+func predict_orbit_path(start_pos: Vector2, start_vel: Vector2, bodies: Array, duration := 5.0, step := 0.1) -> PackedVector2Array:
+	var points : PackedVector2Array = [start_pos]
+	var pos = start_pos
+	var vel = start_vel
+
+	for t in range(int(duration / step)):
+		var acc = Vector2.ZERO
+		for body in bodies:
+			var dir = (body.global_position - pos)
+			var dist_sq = dir.length_squared()
+			if dist_sq == 0:
+				continue
+			acc += (Global.gravitational_constant * body.mass / dist_sq) * dir.normalized()
+		
+		vel += acc * step
+		pos += vel * step
+		points.append(pos)
+	
+	return points
+
+func update_orbit_preview(mouse_pos: Vector2):
+	if not is_instance_valid(placing):
+		return
+	if started_drag == Vector2.ZERO:
+		$OrbitPreview.clear_points()
+		return
+
+	var end_pos = mouse_pos
+	var drag_length = started_drag.distance_to(end_pos)
+	var drag_dir = end_pos.direction_to(started_drag)
+	var launch_velocity = drag_length * drag_dir
+
+	var start_pos = placing.global_position
+	var bodies = $Elements/Stars.get_children().filter(func(b): return b.placed)
+	var predicted_points = predict_orbit_path(start_pos, launch_velocity, bodies, 5.0, 0.02)
+	
+	$OrbitPreview.clear_points()
+	$OrbitPreview.points = predicted_points
+
+func add_gravity_body(body: GravityBody):
+	celestial_bodies.append(body)
+	update_gravity_grid(celestial_bodies)
+
+func update_gravity_grid(bodies : Array[GravityBody]):
+	var mat := $Gravity_Grid.material as ShaderMaterial
+	var count = min(bodies.size(), 16)
+	mat.set_shader_parameter("point_count", count)
+	
+	var points_array = []
+	var masses_array = []
+	
+	for i in range(16):
+		if i < count:
+			points_array.append(bodies[i].global_position)
+			masses_array.append(remap(bodies[i].mass, 1000, 1000000, 0, 800))
+		else:
+			# Clear unused elements
+			points_array.append(Vector2.ZERO)
+			masses_array.append(0.0)
+			
+	mat.set_shader_parameter("points", points_array)
+	mat.set_shader_parameter("masses", masses_array)
 
 # INPUT HANDLING
 # -------------------------------------------------
@@ -82,12 +154,18 @@ func _input(event: InputEvent) -> void:
 			if started_drag == Vector2.ZERO:
 				if is_instance_valid(placing):
 					placing.global_position = get_global_mouse_position()
+					
+					
+					if placing is GravityBody:
+						var warp_bodies = celestial_bodies.duplicate()
+						warp_bodies.append(placing)
+						update_gravity_grid(warp_bodies)
 			else:
 				update_drag_line(get_global_mouse_position())
+				update_orbit_preview(get_global_mouse_position())
 
 		elif event is InputEventMouseButton:
 			handle_mouse_button(event)
-
 
 func handle_mouse_button(event: InputEventMouseButton) -> void:
 	match placement_state:
@@ -95,7 +173,6 @@ func handle_mouse_button(event: InputEventMouseButton) -> void:
 			handle_star_placing(event)
 		PlacementState.PLACING_SATELLITE:
 			handle_satellite_launch(event)
-
 
 func handle_star_placing(event: InputEventMouseButton) -> void:
 	if not is_instance_valid(placing):
@@ -150,9 +227,9 @@ func calculate_launch_velocity(satellite_pos: Vector2, planet_pos: Vector2, plan
 
 	var rotated_dir = Vector2.ZERO
 	if $CanvasLayer/Control/Panel/VBox/OrbitDirectionToggle.button_pressed:
-		rotated_dir = Vector2(-gravity_direction.y, gravity_direction.x)  # Counter-clockwise
+		rotated_dir = Vector2(-gravity_direction.y, gravity_direction.x)
 	else:
-		rotated_dir = Vector2(gravity_direction.y, -gravity_direction.x)  # Clockwise
+		rotated_dir = Vector2(gravity_direction.y, -gravity_direction.x)
 
 	return launch_speed * rotated_dir
 
@@ -174,24 +251,31 @@ func finalize_placing() -> void:
 	placing.place()
 	started_drag = Vector2.ZERO
 	drag_line.clear_points()
+	$OrbitPreview.clear_points()
+	
+	if placing is GravityBody:
+		print("Placing")
+		add_gravity_body(placing)
+	
 	end_placing_mode()
-
 
 func clear_selection() -> void:
 	if selected_body:
 		selected_body.unselect()
 		selected_body = null
 
-
 func clicked_body(body: GravityBody) -> void:
+	if placing:
+		return
 	clear_selection()
 	selected_body = body
 	selected_body.select()
 
-
 func body_deleted(body):
 	selected_body = null
-
+	if body in celestial_bodies:
+		celestial_bodies.erase(body)
+	update_gravity_grid(celestial_bodies)
 
 func body_move(body):
 	var new_state = PlacementState.PLACING_STAR if body is GravityBody else PlacementState.PLACING_SATELLITE
@@ -225,7 +309,6 @@ func end_placing_mode(force := false) -> void:
 				_on_star_unfold_pressed_button(placing_type)
 			PlacementState.PLACING_SATELLITE:
 				_on_satellite_unfold_pressed_button(placing_type)
-
 
 func show_action_bar(visible: bool) -> void:
 	var target_y = base_actionbar_y + (0 if visible else 120)
@@ -261,7 +344,6 @@ func _on_satellite_unfold_pressed_button(idx: Variant) -> void:
 	$Elements/Satellites.add_child(new_sat)
 	placing_type = idx
 	placing = new_sat
-
 
 func _on_star_unfold_pressed_button(idx: Variant) -> void:
 	clear_selection()

@@ -7,5 +7,7 @@ func _ready() -> void:
 	randomize_size()
 
 func randomize_size() -> void:
-	for pt in range($Polygon.polygon.size()):
-		$Polygon.polygon.set(pt, $Polygon.polygon.get(pt) + Vector2(randf(), randf()))
+	var poly = $Polygon.polygon
+	for pt in range(poly.size()):
+		poly.set(pt, poly.get(pt) + Vector2(randf() * 2, randf() * 2))
+	$Polygon.polygon = poly

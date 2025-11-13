@@ -1,10 +1,20 @@
-[gd_scene load_steps=10 format=3 uid="uid://cqpu1p618b2ym"]
+[gd_scene load_steps=20 format=3 uid="uid://cqpu1p618b2ym"]
 
 [ext_resource type="Script" uid="uid://dhebink5cv0fx" path="res://Elements/satellite.gd" id="1_twluq"]
 [ext_resource type="Texture2D" uid="uid://dwop4tarinyl6" path="res://Assets/img/Satellites/sprite_1.png" id="2_4h4dh"]
 [ext_resource type="Texture2D" uid="uid://ocsa5mlqcd6t" path="res://Assets/img/Satellites/sprite_2.png" id="3_0j0kh"]
 [ext_resource type="Texture2D" uid="uid://ccejnsgngvt34" path="res://Assets/img/Satellites/sprite_3.png" id="4_vui48"]
 [ext_resource type="Texture2D" uid="uid://s5rdkq22w886" path="res://Assets/img/Satellites/sprite_4.png" id="5_jhuwi"]
+[ext_resource type="Texture2D" uid="uid://btccqfkka72es" path="res://Assets/img/Satellites/sprite_5.png" id="6_y6lxp"]
+[ext_resource type="Texture2D" uid="uid://vaocxwu34q0f" path="res://Assets/img/Satellites/sprite_6.png" id="7_rehy5"]
+[ext_resource type="Texture2D" uid="uid://b8dh4rlvf1u0v" path="res://Assets/img/Satellites/sprite_7.png" id="8_l1jqp"]
+[ext_resource type="Texture2D" uid="uid://cbdwl5mlqkxek" path="res://Assets/img/Satellites/sprite_8.png" id="9_jt10f"]
+[ext_resource type="Texture2D" uid="uid://cyjchi6x3r4fb" path="res://Assets/img/Satellites/sprite_9.png" id="10_i03or"]
+[ext_resource type="Texture2D" uid="uid://t0cwiwfc4rgp" path="res://Assets/img/Satellites/sprite_10.png" id="11_wl0ks"]
+[ext_resource type="Texture2D" uid="uid://cti04tke4ox4u" path="res://Assets/img/Satellites/sprite_11.png" id="12_na81v"]
+[ext_resource type="Texture2D" uid="uid://bb11ueinmbhc0" path="res://Assets/img/Satellites/sprite_12.png" id="13_qf60x"]
+[ext_resource type="Texture2D" uid="uid://do7whobo1p43k" path="res://Assets/img/Satellites/sprite_13.png" id="14_484ug"]
+[ext_resource type="Texture2D" uid="uid://uvh2wcvm3agg" path="res://Assets/img/Satellites/sprite_14.png" id="15_y06ji"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4h4dh"]
 
@@ -22,6 +32,36 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("5_jhuwi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_y6lxp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_rehy5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_l1jqp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_jt10f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_i03or")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_wl0ks")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_na81v")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_qf60x")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_484ug")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_y06ji")
 }],
 "loop": true,
 "name": &"default",
@@ -45,7 +85,7 @@ shape = SubResource("CircleShape2D_4h4dh")
 disabled = true
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
-texture_filter = 1
+scale = Vector2(0.2, 0.2)
 sprite_frames = SubResource("SpriteFrames_ve0xn")
 
 [node name="Node" type="Node" parent="."]
@@ -54,3 +94,4 @@ sprite_frames = SubResource("SpriteFrames_ve0xn")
 width = 3.0
 width_curve = SubResource("Curve_4h4dh")
 gradient = SubResource("Gradient_4h4dh")
+antialiased = true
