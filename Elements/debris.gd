@@ -3,7 +3,10 @@ class_name Debris
 
 var mass : int = 1
 
+var colors : Array[String] = ["4483a2", "e19e3d", "ffffff"]
+
 func _ready() -> void:
+	$Polygon.color = Color(colors.pick_random())
 	randomize_size()
 
 func randomize_size() -> void:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bxapoxbkcvb4p"]
+[gd_scene load_steps=26 format=3 uid="uid://bxapoxbkcvb4p"]
 
 [ext_resource type="Script" uid="uid://ckqwsx33cum74" path="res://Worlds/world.gd" id="1_4xfh2"]
 [ext_resource type="PackedScene" uid="uid://dlmls5pipfmug" path="res://UI/vertical_unfold.tscn" id="1_bl0d6"]
@@ -8,13 +8,24 @@
 [ext_resource type="Texture2D" uid="uid://boenug8daqk3w" path="res://Assets/img/Stars/sprite_4.png" id="5_04avt"]
 [ext_resource type="Texture2D" uid="uid://dwop4tarinyl6" path="res://Assets/img/Satellites/sprite_1.png" id="7_07imi"]
 [ext_resource type="Shader" uid="uid://u6vcjlje6tqg" path="res://Shaders/StarBG.gdshader" id="8_hdcsk"]
+[ext_resource type="Script" uid="uid://c7e3kaxp0aigx" path="res://Worlds/planet_settings.gd" id="8_i53fm"]
 [ext_resource type="Script" uid="uid://ch4oiioabrx0v" path="res://Worlds/camera_2d.gd" id="8_w2mg1"]
 [ext_resource type="Texture2D" uid="uid://benwv3eahhraa" path="res://Assets/img/Grid.png" id="10_4qppp"]
-[ext_resource type="Shader" uid="uid://e8s3l4jkw6ht" path="res://Shaders/AlphaCutout.gdshader" id="10_qxe63"]
 [ext_resource type="Shader" uid="uid://dwtoak71wttwh" path="res://Shaders/GravityGrid.gdshader" id="12_25de1"]
+[ext_resource type="AudioStream" uid="uid://duy6sjwh5uy0j" path="res://Assets/snd/SFX/LowThud.wav" id="13_qkl34"]
+[ext_resource type="AudioStream" uid="uid://vfafsedsqcxc" path="res://Assets/snd/SFX/SatPlacement.wav" id="14_6idkr"]
+[ext_resource type="AudioStream" uid="uid://cdlsf2tl6uatk" path="res://Assets/snd/SFX/UI_Click.wav" id="14_qkl34"]
+[ext_resource type="AudioStream" uid="uid://cm0qu6y2d5ljn" path="res://Assets/snd/SFX/Vanish.mp3" id="15_yn4g4"]
+[ext_resource type="AudioStream" uid="uid://0w1unby8j7c2" path="res://Assets/snd/SFX/Pop1.wav" id="16_i53fm"]
+[ext_resource type="AudioStream" uid="uid://cq1u16wrrp2kx" path="res://Assets/snd/SFX/Pop2.wav" id="17_5es2h"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w2mg1"]
 bg_color = Color(0.502859, 0.612931, 0.764706, 0.231373)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5n3ns"]
+bg_color = Color(0, 1, 0.957482, 0.223529)
+border_color = Color(0, 0.553561, 0.570313, 1)
+border_blend = true
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w2mg1"]
 shader = ExtResource("8_hdcsk")
@@ -38,12 +49,6 @@ shader_parameter/world_offset = Vector2(0, 0)
 width = 1920
 height = 1080
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_25de1"]
-shader = ExtResource("10_qxe63")
-shader_parameter/circle_center_world = Vector2(500, 500)
-shader_parameter/circle_radius = 20.0
-shader_parameter/fade_width = 400.0
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5n3ns"]
 shader = ExtResource("12_25de1")
 shader_parameter/tint_color = Color(0.313033, 0.803086, 1, 1)
@@ -51,7 +56,7 @@ shader_parameter/alpha_value = 0.2
 shader_parameter/point_count = 1
 shader_parameter/points = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/masses = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/influence_radius = 500.0
+shader_parameter/influence_radius = 2000.0
 shader_parameter/pinch_strength = -0.1
 
 [sub_resource type="Curve" id="Curve_4qppp"]
@@ -187,15 +192,24 @@ texture = ExtResource("7_07imi")
 [node name="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/SatelliteUnfold/Panel/VBox/Button" index="0"]
 texture = ExtResource("7_07imi")
 
-[node name="Panel" type="Panel" parent="CanvasLayer/Control"]
-custom_minimum_size = Vector2(160, 120)
+[node name="OptionPanels" type="Control" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="General" type="Panel" parent="CanvasLayer/Control/OptionPanels"]
+custom_minimum_size = Vector2(160, 160)
 layout_mode = 1
 offset_top = 120.0
-offset_right = 80.0
-offset_bottom = 240.0
+offset_right = 160.0
+offset_bottom = 280.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_w2mg1")
 
-[node name="VBox" type="VBoxContainer" parent="CanvasLayer/Control/Panel"]
+[node name="VBox" type="VBoxContainer" parent="CanvasLayer/Control/OptionPanels/General"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -204,11 +218,20 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
 
-[node name="ContinuosPlacementToggle" type="CheckButton" parent="CanvasLayer/Control/Panel/VBox"]
+[node name="Title" type="Label" parent="CanvasLayer/Control/OptionPanels/General/VBox"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_5n3ns")
+text = "General"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ContinuosPlacementToggle" type="CheckButton" parent="CanvasLayer/Control/OptionPanels/General/VBox"]
 custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/Control/Panel/VBox/ContinuosPlacementToggle"]
+[node name="Label" type="Label" parent="CanvasLayer/Control/OptionPanels/General/VBox/ContinuosPlacementToggle"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -220,11 +243,71 @@ theme_override_font_sizes/font_size = 10
 text = "Continuos Placement"
 vertical_alignment = 1
 
-[node name="AutoOrbitsToggle" type="CheckButton" parent="CanvasLayer/Control/Panel/VBox"]
+[node name="TrailsToggle" type="CheckButton" parent="CanvasLayer/Control/OptionPanels/General/VBox"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+button_pressed = true
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/OptionPanels/General/VBox/TrailsToggle"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 10
+text = "Orbit Trails"
+vertical_alignment = 1
+
+[node name="GravityGridToggle" type="CheckButton" parent="CanvasLayer/Control/OptionPanels/General/VBox"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+button_pressed = true
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/OptionPanels/General/VBox/GravityGridToggle"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 10
+text = "Gravity Grid"
+vertical_alignment = 1
+
+[node name="SatLaunch" type="Panel" parent="CanvasLayer/Control/OptionPanels"]
+custom_minimum_size = Vector2(160, 120)
+layout_mode = 1
+offset_top = 288.0
+offset_right = 160.0
+offset_bottom = 408.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_w2mg1")
+
+[node name="VBox" type="VBoxContainer" parent="CanvasLayer/Control/OptionPanels/SatLaunch"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Title" type="Label" parent="CanvasLayer/Control/OptionPanels/SatLaunch/VBox"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_5n3ns")
+text = "Satellite Launch"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoOrbitsToggle" type="CheckButton" parent="CanvasLayer/Control/OptionPanels/SatLaunch/VBox"]
 custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/Control/Panel/VBox/AutoOrbitsToggle"]
+[node name="Label" type="Label" parent="CanvasLayer/Control/OptionPanels/SatLaunch/VBox/AutoOrbitsToggle"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -236,11 +319,11 @@ theme_override_font_sizes/font_size = 10
 text = "Automatic Orbit"
 vertical_alignment = 1
 
-[node name="OrbitDirectionToggle" type="CheckButton" parent="CanvasLayer/Control/Panel/VBox"]
+[node name="OrbitDirectionToggle" type="CheckButton" parent="CanvasLayer/Control/OptionPanels/SatLaunch/VBox"]
 custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/Control/Panel/VBox/OrbitDirectionToggle"]
+[node name="Label" type="Label" parent="CanvasLayer/Control/OptionPanels/SatLaunch/VBox/OrbitDirectionToggle"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -252,6 +335,89 @@ theme_override_font_sizes/font_size = 10
 text = "Orbit Direction"
 vertical_alignment = 1
 
+[node name="PlanetSettings" type="Panel" parent="CanvasLayer/Control"]
+visible = false
+custom_minimum_size = Vector2(280, 120)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -80.0
+offset_bottom = 40.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_w2mg1")
+script = ExtResource("8_i53fm")
+
+[node name="VBox" type="VBoxContainer" parent="CanvasLayer/Control/PlanetSettings"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Title" type="Label" parent="CanvasLayer/Control/PlanetSettings/VBox"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_5n3ns")
+text = "Celestial Body Settings"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxSize" type="HBoxContainer" parent="CanvasLayer/Control/PlanetSettings/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/PlanetSettings/VBox/HBoxSize"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "Size"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SizeSlider" type="HSlider" parent="CanvasLayer/Control/PlanetSettings/VBox/HBoxSize"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+min_value = 1.0
+max_value = 15.0
+step = 0.01
+value = 1.0
+
+[node name="Spacer" type="Label" parent="CanvasLayer/Control/PlanetSettings/VBox/HBoxSize"]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="HBoxMass" type="HBoxContainer" parent="CanvasLayer/Control/PlanetSettings/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/PlanetSettings/VBox/HBoxMass"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "Mass"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MassSlider" type="HSlider" parent="CanvasLayer/Control/PlanetSettings/VBox/HBoxMass"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+min_value = 100000.0
+max_value = 5e+06
+step = 10.0
+value = 100000.0
+
+[node name="Spacer" type="Label" parent="CanvasLayer/Control/PlanetSettings/VBox/HBoxMass"]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
 [node name="Placing" type="Label" parent="CanvasLayer/Control"]
 visible = false
 layout_mode = 0
@@ -259,6 +425,85 @@ offset_right = 40.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 30
 text = "Placing : "
+
+[node name="DebugPanel" type="Panel" parent="CanvasLayer/Control"]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_w2mg1")
+
+[node name="HBox" type="HBoxContainer" parent="CanvasLayer/Control/DebugPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FPS_VBox" type="VBoxContainer" parent="CanvasLayer/Control/DebugPanel/HBox"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="CanvasLayer/Control/DebugPanel/HBox/FPS_VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 24
+text = "FPS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Value" type="Label" parent="CanvasLayer/Control/DebugPanel/HBox/FPS_VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 24
+text = "50"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Sats_VBox" type="VBoxContainer" parent="CanvasLayer/Control/DebugPanel/HBox"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="CanvasLayer/Control/DebugPanel/HBox/Sats_VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 24
+text = "Sats"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Value" type="Label" parent="CanvasLayer/Control/DebugPanel/HBox/Sats_VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 24
+text = "50"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Debris_VBox" type="VBoxContainer" parent="CanvasLayer/Control/DebugPanel/HBox"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="CanvasLayer/Control/DebugPanel/HBox/Debris_VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 24
+text = "Debris"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Value" type="Label" parent="CanvasLayer/Control/DebugPanel/HBox/Debris_VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 24
+text = "50"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
 offset = Vector2(960, 540)
@@ -269,17 +514,6 @@ material = SubResource("ShaderMaterial_w2mg1")
 offset_right = 40.0
 offset_bottom = 40.0
 texture = SubResource("NoiseTexture2D_4qppp")
-
-[node name="BG_Grid" type="Sprite2D" parent="."]
-visible = false
-self_modulate = Color(0.497018, 0.947674, 1, 0.513726)
-texture_repeat = 2
-material = SubResource("ShaderMaterial_25de1")
-position = Vector2(960, 540)
-scale = Vector2(2, 2)
-texture = ExtResource("10_4qppp")
-region_enabled = true
-region_rect = Rect2(0, 0, 5120, 5120)
 
 [node name="Gravity_Grid" type="Sprite2D" parent="."]
 texture_repeat = 2
@@ -313,10 +547,38 @@ default_color = Color(0.0785339, 1, 0, 1)
 
 [node name="Debris" type="Node2D" parent="Elements"]
 
+[node name="SFX" type="Node" parent="."]
+
+[node name="StarPlacement" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("13_qkl34")
+
+[node name="SatellitePlacement" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("14_6idkr")
+volume_db = 5.0
+
+[node name="Click" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("14_qkl34")
+volume_db = -10.0
+
+[node name="Vanish" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("15_yn4g4")
+
+[node name="Pop1" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("16_i53fm")
+
+[node name="Pop2" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("17_5es2h")
+volume_db = -10.0
+
 [connection signal="pressed_button" from="CanvasLayer/Control/ActionBar/HBox/StarUnfold" to="." method="_on_star_unfold_pressed_button"]
 [connection signal="unfolded" from="CanvasLayer/Control/ActionBar/HBox/StarUnfold" to="." method="vertical_unfolder_unfolded"]
 [connection signal="pressed_button" from="CanvasLayer/Control/ActionBar/HBox/SatelliteUnfold" to="." method="_on_satellite_unfold_pressed_button"]
 [connection signal="unfolded" from="CanvasLayer/Control/ActionBar/HBox/SatelliteUnfold" to="." method="vertical_unfolder_unfolded"]
+[connection signal="toggled" from="CanvasLayer/Control/OptionPanels/General/VBox/TrailsToggle" to="." method="_on_trails_toggle_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/OptionPanels/General/VBox/GravityGridToggle" to="." method="_on_gravity_grid_toggle_toggled"]
+[connection signal="body_mass_changed" from="CanvasLayer/Control/PlanetSettings" to="." method="_on_planet_settings_body_mass_changed"]
+[connection signal="value_changed" from="CanvasLayer/Control/PlanetSettings/VBox/HBoxSize/SizeSlider" to="CanvasLayer/Control/PlanetSettings" method="_on_size_slider_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/Control/PlanetSettings/VBox/HBoxMass/MassSlider" to="CanvasLayer/Control/PlanetSettings" method="_on_mass_slider_value_changed"]
 
 [editable path="CanvasLayer/Control/ActionBar/HBox/StarUnfold"]
 [editable path="CanvasLayer/Control/ActionBar/HBox/SatelliteUnfold"]

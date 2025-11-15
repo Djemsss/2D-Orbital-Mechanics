@@ -11,6 +11,7 @@ var STAR_TYPES : Dictionary = {
 }
 
 var type : int = 0
+var size : float = 1.0
 
 @onready var sprite : AnimatedSprite2D = $Sprite
 @onready var collision_shape_2d : CollisionShape2D = $Area2D/CollisionShape2D
@@ -32,12 +33,16 @@ func set_type(newType : int) -> void:
 	type = STAR_TYPES.size() - 1 - newType
 	sprite.frame = type
 	var newScale = type + 2 + randf_range(-0.2, 0.2)
+	resize(newScale)
+	edit_tools.set_body_name(STAR_TYPES[type].name)
+
+func resize(newScale : float) -> void:
+	size = newScale
 	sprite.scale = Vector2(newScale, newScale) / 5.5
 	collision_shape_2d.shape.radius = sprite_base_size.x * newScale / 2
 	
 	edit_tools.size = sprite_base_size * newScale + EDIT_TOOL_PADDING
 	edit_tools.position = Vector2(-edit_tools.size.x / 2, -edit_tools.size.y / 2)
-	edit_tools.set_body_name(STAR_TYPES[type].name)
 
 func select() -> void:
 	edit_tools.show()

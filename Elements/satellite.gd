@@ -64,6 +64,9 @@ func destroy(with_debris : bool = false) -> void:
 		return
 	destroyed = true
 	if with_debris:
-		spawn_debris(randi_range(5, 12), 20, 4)
+		spawn_debris(randi_range(3, 8), 20, 4)
 		#await finished_spawning_debris
 	queue_free()
+
+func clear_trail():
+	$Node/Line2D.clear_points()

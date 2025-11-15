@@ -27,12 +27,20 @@ var celestial_bodies : Array[GravityBody] = []
 
 func _ready() -> void:
 	base_actionbar_y = action_bar.position.y
+	
+	var buttons : Array[Button] = []
+	Global.find_nodes_of_class(get_tree().root, "Button", buttons)
+	for button : Button in buttons:
+		button.pressed.connect(Callable($SFX/Click, "play"))
+	
 
 func _physics_process(delta: float) -> void:
+	update_debug_panel()
 	for sat: Satellite in $Elements/Satellites.get_children():
 		if sat.placed:
 			process_sat_gravity(sat, delta, celestial_bodies)
-			sat.process_trail()
+			if $CanvasLayer/Control/OptionPanels/General/VBox/TrailsToggle.button_pressed:
+				sat.process_trail()
 	
 	for debris : Debris in $Elements/Debris.get_children():
 		process_debris_gravity(debris, delta, celestial_bodies)
@@ -53,6 +61,7 @@ func process_sat_gravity(sat : Satellite, delta : float, bodyList : Array):
 			collider.destroy(true)
 		elif collider is Debris:
 			sat.destroy(true)
+
 
 func process_debris_gravity(debris : Debris, delta : float, bodyList : Array):
 	for body in bodyList:
@@ -127,7 +136,7 @@ func update_gravity_grid(bodies : Array[GravityBody]):
 	for i in range(16):
 		if i < count:
 			points_array.append(bodies[i].global_position)
-			masses_array.append(remap(bodies[i].mass, 1000, 1000000, 0, 800))
+			masses_array.append(bodies[i].mass / 1000)
 		else:
 			# Clear unused elements
 			points_array.append(Vector2.ZERO)
@@ -135,6 +144,7 @@ func update_gravity_grid(bodies : Array[GravityBody]):
 			
 	mat.set_shader_parameter("points", points_array)
 	mat.set_shader_parameter("masses", masses_array)
+
 
 # INPUT HANDLING
 # -------------------------------------------------
@@ -146,9 +156,9 @@ func _input(event: InputEvent) -> void:
 			end_placing_mode(true)
 		clear_selection()
 		return
-		
-	if get_viewport().gui_get_hovered_control() and get_viewport().gui_get_hovered_control().mouse_filter == Control.MOUSE_FILTER_STOP:
-		return
+	if placement_state in [PlacementState.PLACING_STAR, PlacementState.PLACING_SATELLITE]:
+		if get_viewport().gui_get_hovered_control() and get_viewport().gui_get_hovered_control().mouse_filter == Control.MOUSE_FILTER_STOP:
+			return
 	if placement_state in [PlacementState.PLACING_STAR, PlacementState.PLACING_SATELLITE]:
 		if event is InputEventMouseMotion:
 			if started_drag == Vector2.ZERO:
@@ -177,7 +187,6 @@ func handle_mouse_button(event: InputEventMouseButton) -> void:
 func handle_star_placing(event: InputEventMouseButton) -> void:
 	if not is_instance_valid(placing):
 		return
-
 	if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		var body := placing as GravityBody
 		if body:
@@ -185,8 +194,8 @@ func handle_star_placing(event: InputEventMouseButton) -> void:
 			body.body_deleted.connect(Callable(body_deleted))
 			body.body_move.connect(Callable(body_move))
 			body.place()
+			$SFX/StarPlacement.play()
 			finalize_placing()
-
 
 func handle_satellite_launch(event: InputEventMouseButton) -> void:
 	if not is_instance_valid(placing):
@@ -194,13 +203,14 @@ func handle_satellite_launch(event: InputEventMouseButton) -> void:
 	if event.button_index != MOUSE_BUTTON_LEFT:
 		return
 	if event.pressed:
-		if $CanvasLayer/Control/Panel/VBox/AutoOrbitsToggle.button_pressed:
+		if $CanvasLayer/Control/OptionPanels/SatLaunch/VBox/AutoOrbitsToggle.button_pressed:
 			# Auto circular orbit launch
 			var mouse_pos = get_global_mouse_position()
 			var closest = find_closest_body(mouse_pos)
 			var vel = calculate_launch_velocity(mouse_pos, closest.global_position, closest.mass) if closest != null else Vector2.ZERO
 			placing.velocity = vel
 			placing.spawned_debris.connect(Callable(debris_spawned))
+			$SFX/SatellitePlacement.play()
 			finalize_placing()
 		else:
 			# Begin drag for launch
@@ -214,6 +224,7 @@ func handle_satellite_launch(event: InputEventMouseButton) -> void:
 			var drag_dir = end_pos.direction_to(started_drag)
 			placing.velocity = drag_length * drag_dir
 			placing.spawned_debris.connect(Callable(debris_spawned))
+			$SFX/SatellitePlacement.play()
 			finalize_placing()
 
 
@@ -226,13 +237,12 @@ func calculate_launch_velocity(satellite_pos: Vector2, planet_pos: Vector2, plan
 	var launch_speed = sqrt(Global.gravitational_constant * planet_mass / distance)
 
 	var rotated_dir = Vector2.ZERO
-	if $CanvasLayer/Control/Panel/VBox/OrbitDirectionToggle.button_pressed:
+	if $CanvasLayer/Control/OptionPanels/SatLaunch/VBox/OrbitDirectionToggle.button_pressed:
 		rotated_dir = Vector2(-gravity_direction.y, gravity_direction.x)
 	else:
 		rotated_dir = Vector2(gravity_direction.y, -gravity_direction.x)
 
 	return launch_speed * rotated_dir
-
 
 func find_closest_body(pos: Vector2) -> GravityBody:
 	var closest: GravityBody = null
@@ -243,7 +253,6 @@ func find_closest_body(pos: Vector2) -> GravityBody:
 			min_dist = dist
 			closest = body
 	return closest
-
 
 func finalize_placing() -> void:
 	if not is_instance_valid(placing):
@@ -261,6 +270,7 @@ func finalize_placing() -> void:
 
 func clear_selection() -> void:
 	if selected_body:
+		$CanvasLayer/Control/PlanetSettings.toggle(false)
 		selected_body.unselect()
 		selected_body = null
 
@@ -270,9 +280,12 @@ func clicked_body(body: GravityBody) -> void:
 	clear_selection()
 	selected_body = body
 	selected_body.select()
+	
+	toggle_celestial_body_panel(true, body)
 
 func body_deleted(body):
-	selected_body = null
+	$SFX/Vanish.play()
+	clear_selection()
 	if body in celestial_bodies:
 		celestial_bodies.erase(body)
 	update_gravity_grid(celestial_bodies)
@@ -281,11 +294,20 @@ func body_move(body):
 	var new_state = PlacementState.PLACING_STAR if body is GravityBody else PlacementState.PLACING_SATELLITE
 	start_placing_mode(new_state)
 	body.unselect()
+	if body in celestial_bodies:
+		celestial_bodies.erase(body)
 	body.selected_body.disconnect(Callable(clicked_body))
 	body.body_deleted.disconnect(Callable(body_deleted))
 	body.body_move.disconnect(Callable(body_move))
 	placing = body
 
+func update_debug_panel():
+	$CanvasLayer/Control/DebugPanel/HBox/FPS_VBox/Value.text = str(int(Engine.get_frames_per_second()))
+	$CanvasLayer/Control/DebugPanel/HBox/Sats_VBox/Value.text = str($Elements/Satellites.get_child_count())
+	$CanvasLayer/Control/DebugPanel/HBox/Debris_VBox/Value.text = str($Elements/Debris.get_child_count())
+
+func toggle_celestial_body_panel(toggle_on : bool, body : GravityBody) -> void:
+	$CanvasLayer/Control/PlanetSettings.toggle(toggle_on, body)
 
 # PLACEMENT STATE MANAGEMENT
 # -------------------------------------------------
@@ -297,7 +319,7 @@ func start_placing_mode(type: PlacementState) -> void:
 	show_action_bar(false)
 
 func end_placing_mode(force := false) -> void:
-	var continuous = $CanvasLayer/Control/Panel/VBox/ContinuosPlacementToggle.button_pressed
+	var continuous = $CanvasLayer/Control/OptionPanels/General/VBox/ContinuosPlacementToggle.button_pressed
 
 	if force or not continuous:
 		placement_state = PlacementState.NONE
@@ -309,6 +331,7 @@ func end_placing_mode(force := false) -> void:
 				_on_star_unfold_pressed_button(placing_type)
 			PlacementState.PLACING_SATELLITE:
 				_on_satellite_unfold_pressed_button(placing_type)
+	update_gravity_grid(celestial_bodies)
 
 func show_action_bar(visible: bool) -> void:
 	var target_y = base_actionbar_y + (0 if visible else 120)
@@ -338,6 +361,7 @@ func update_drag_line(pos: Vector2) -> void:
 # -------------------------------------------------
 
 func _on_satellite_unfold_pressed_button(idx: Variant) -> void:
+	$SFX/Click.play()
 	clear_selection()
 	start_placing_mode(PlacementState.PLACING_SATELLITE)
 	var new_sat = satellite_scene.instantiate()
@@ -346,6 +370,7 @@ func _on_satellite_unfold_pressed_button(idx: Variant) -> void:
 	placing = new_sat
 
 func _on_star_unfold_pressed_button(idx: Variant) -> void:
+	$SFX/Click.play()
 	clear_selection()
 	start_placing_mode(PlacementState.PLACING_STAR)
 	var new_star = star_scene.instantiate()
@@ -359,6 +384,20 @@ func debris_spawned(debris : Debris):
 	$Elements/Debris.call_deferred("add_child", debris)
 
 func vertical_unfolder_unfolded(unfolder: VerticalUnfold) -> void:
+	$SFX/Click.play()
 	for v_unfold: VerticalUnfold in $CanvasLayer/Control/ActionBar/HBox.get_children():
 		if not v_unfold.folded and v_unfold != unfolder:
 			v_unfold.toggle_fold()
+
+func _on_trails_toggle_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		pass
+	else:
+		for sat : Satellite in $Elements/Satellites.get_children():
+			sat.clear_trail()
+
+func _on_gravity_grid_toggle_toggled(toggled_on: bool) -> void:
+	$Gravity_Grid.visible = toggled_on
+
+func _on_planet_settings_body_mass_changed() -> void:
+	update_gravity_grid(celestial_bodies)
