@@ -77,6 +77,7 @@ resource_local_to_scene = true
 colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1)
 
 [node name="Satellite" type="CharacterBody2D"]
+z_index = 1
 motion_mode = 1
 script = ExtResource("1_twluq")
 
@@ -91,6 +92,8 @@ sprite_frames = SubResource("SpriteFrames_ve0xn")
 [node name="Node" type="Node" parent="."]
 
 [node name="Line2D" type="Line2D" parent="Node"]
+show_behind_parent = true
+z_as_relative = false
 width = 3.0
 width_curve = SubResource("Curve_4h4dh")
 gradient = SubResource("Gradient_4h4dh")

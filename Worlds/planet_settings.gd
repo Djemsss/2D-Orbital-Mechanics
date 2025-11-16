@@ -1,15 +1,25 @@
 extends Panel
+class_name PlanetSettings
+
+# Handles the Planet Settings UI, where placed bodies can have their characteristics modified
+
 
 var selected_body : GravityBody
 
-signal body_mass_changed 
+@onready var size_slider : HSlider = $VBox/HBoxSize/SizeSlider
+@onready var mass_slider : HSlider = $VBox/HBoxMass/MassSlider
 
+signal body_mass_changed
+
+
+# UTILS
+# -------------------------------------------------
 
 func toggle(toggle_on : bool, body : GravityBody = null) -> void:
 	if toggle_on and body:
 		selected_body = body
-		$VBox/HBoxSize/SizeSlider.value = body.size
-		$VBox/HBoxMass/MassSlider.value = body.mass
+		size_slider.value = body.size
+		mass_slider.value = body.mass
 		show()
 	else:
 		hide()

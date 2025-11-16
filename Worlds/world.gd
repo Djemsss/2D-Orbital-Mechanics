@@ -1,4 +1,8 @@
 extends Node2D
+class_name World
+
+## Main game scene
+
 
 const star_scene = preload("res://Elements/star.tscn")
 const satellite_scene = preload("res://Elements/satellite.tscn")
@@ -6,83 +10,88 @@ const satellite_scene = preload("res://Elements/satellite.tscn")
 @export var placing_mode_time := 0.2
 
 enum PlacementState { NONE, PLACING_STAR, PLACING_SATELLITE }
-var placement_state: PlacementState = PlacementState.NONE
+var placement_state : PlacementState = PlacementState.NONE
+
+var TimewarpOptions : Array[float] = [0, 1, 2, 5]
+var current_timewarp : float = 1.0
+const STANDARD_DELTA = 1.0 / 60.0
 
 var placing: Node2D = null
 var placing_type : int = 0
 var tween: Tween = null
-var selected_body: GravityBody = null
-var started_drag: Vector2 = Vector2.ZERO
-var base_actionbar_y := 0.0
+var selected_body : GravityBody = null
+var started_drag : Vector2 = Vector2.ZERO
+var base_actionbar_y : float = 0.0
+
+var trails_enabled : bool = true
+var continuous_placement_enabled : bool = false
+var auto_orbits_enabled : bool = false
+var orbit_direction_reversed : bool = false
 
 var celestial_bodies : Array[GravityBody] = []
 
-@onready var drag_line: Line2D = $DragLine
-@onready var camera: Camera2D = $Camera2D
-@onready var action_bar: Control = $CanvasLayer/Control/ActionBar
+@onready var drag_line : Line2D = $DragLine
+@onready var orbit_preview : Line2D = $OrbitPreview
+@onready var camera : Camera2D = $Camera2D
+
+@onready var option_panels : OptionPanels = $CanvasLayer/Control/OptionPanels
+@onready var debug_panel : DebugPanel = $CanvasLayer/Control/DebugPanel
+@onready var planet_settings : PlanetSettings = $CanvasLayer/Control/PlanetSettings 
+@onready var action_bar : Panel = $CanvasLayer/Control/ActionBar
+
+@onready var satellite_holder : Node2D = $Elements/Satellites
+@onready var star_holder : Node2D = $Elements/Stars
+@onready var debris_holder : Node2D = $Elements/Debris
+
+@onready var gravity_grid : Sprite2D = $Gravity_Grid
+
+@onready var click_SFX : AudioStreamPlayer = $SFX/Click
+@onready var star_placement_SFX : AudioStreamPlayer = $SFX/StarPlacement
+@onready var satellite_placement_SFX : AudioStreamPlayer = $SFX/SatellitePlacement
+@onready var vanish_SFX : AudioStreamPlayer = $SFX/Vanish
 
 
-# PROCESSING
+# PROCESS
 # -------------------------------------------------
 
 func _ready() -> void:
 	base_actionbar_y = action_bar.position.y
 	
+	# Connect buttons to click SFX
 	var buttons : Array[Button] = []
 	Global.find_nodes_of_class(get_tree().root, "Button", buttons)
 	for button : Button in buttons:
-		button.pressed.connect(Callable($SFX/Click, "play"))
+		button.pressed.connect(Callable(click_SFX, "play"))
 	
+	# Connect option panel signals
+	option_panels.trails_changed.connect(Callable(trails_changed))
+	option_panels.gravity_grid_changed.connect(Callable(gravity_grid_changed))
+	option_panels.timewarp_changed.connect(Callable(timewarp_changed))
+	option_panels.clear_all.connect(Callable(clear_all))
+	option_panels.continuous_placement_changed.connect(Callable(continuous_placement_changed))
+	option_panels.auto_orbits_changed.connect(Callable(auto_orbits_changed))
+	option_panels.orbit_direction_changed.connect(Callable(orbit_direction_changed))
 
 func _physics_process(delta: float) -> void:
-	update_debug_panel()
-	for sat: Satellite in $Elements/Satellites.get_children():
-		if sat.placed:
-			process_sat_gravity(sat, delta, celestial_bodies)
-			if $CanvasLayer/Control/OptionPanels/General/VBox/TrailsToggle.button_pressed:
+	simulate_orbits(delta)
+
+func simulate_orbits(delta) -> void:
+	# Simulates the orbits of all satellites and debris around celestial bodies and updates trails if needed
+	# Handles timewarp by simulating multiple steps per physics frame if necessary 
+	
+	var steps_to_run = roundi(current_timewarp)
+	for i in range(steps_to_run):
+		for sat: Satellite in satellite_holder.get_children():
+			sat.process_gravity(delta, celestial_bodies)
+			if trails_enabled:
 				sat.process_trail()
-	
-	for debris : Debris in $Elements/Debris.get_children():
-		process_debris_gravity(debris, delta, celestial_bodies)
-
-func process_sat_gravity(sat : Satellite, delta : float, bodyList : Array):
-	for body in bodyList:
 		
-		var gravity_dir = (body.global_position - sat.global_position).normalized()		
-		var force = Global.gravitational_constant * sat.mass * body.mass / (sat.global_position.distance_squared_to(body.global_position))
-		var acceleration = force / sat.mass
-		sat.velocity += gravity_dir * acceleration * delta
-		
-	if sat.move_and_slide():
-		var collision = sat.get_last_slide_collision()
-		var collider = collision.get_collider()
-		if (collider is Satellite and collider.placed):
-			sat.destroy(true)
-			collider.destroy(true)
-		elif collider is Debris:
-			sat.destroy(true)
-
-
-func process_debris_gravity(debris : Debris, delta : float, bodyList : Array):
-	for body in bodyList:
-		var gravity_dir = (body.global_position - debris.global_position).normalized()		
-		var force = Global.gravitational_constant * debris.mass * body.mass / (debris.global_position.distance_squared_to(body.global_position))
-		var acceleration = force / debris.mass
-		debris.velocity += gravity_dir * acceleration * delta
-		
-	debris.move_and_slide()
-	
-	for i in range(debris.get_slide_collision_count()):
-		var col = debris.get_slide_collision(i)
-		var other = col.get_collider()
-		if other is Debris and other != debris:
-			# Vel blending
-			var combined = (debris.velocity * debris.mass + other.velocity * other.mass) / (debris.mass + other.mass)
-			
-			debris.velocity = lerp(debris.velocity, combined, 0.2)
-			other.velocity = lerp(other.velocity, combined, 0.2)
+		for debris : Debris in debris_holder.get_children():
+			debris.process_gravity(delta, celestial_bodies)
 
 func predict_orbit_path(start_pos: Vector2, start_vel: Vector2, bodies: Array, duration := 5.0, step := 0.1) -> PackedVector2Array:
+	# Orbit prediction to be displayed with the "orbit_preview" node
+	
 	var points : PackedVector2Array = [start_pos]
 	var pos = start_pos
 	var vel = start_vel
@@ -102,11 +111,13 @@ func predict_orbit_path(start_pos: Vector2, start_vel: Vector2, bodies: Array, d
 	
 	return points
 
-func update_orbit_preview(mouse_pos: Vector2):
+func update_orbit_preview(mouse_pos: Vector2) -> void:
+	# Updates the orbit path preview when the player is dragging to launch a satellite
+	
 	if not is_instance_valid(placing):
 		return
 	if started_drag == Vector2.ZERO:
-		$OrbitPreview.clear_points()
+		orbit_preview.clear_points()
 		return
 
 	var end_pos = mouse_pos
@@ -115,18 +126,20 @@ func update_orbit_preview(mouse_pos: Vector2):
 	var launch_velocity = drag_length * drag_dir
 
 	var start_pos = placing.global_position
-	var bodies = $Elements/Stars.get_children().filter(func(b): return b.placed)
+	var bodies = star_holder.get_children().filter(func(b): return b.placed)
 	var predicted_points = predict_orbit_path(start_pos, launch_velocity, bodies, 5.0, 0.02)
 	
-	$OrbitPreview.clear_points()
-	$OrbitPreview.points = predicted_points
+	orbit_preview.clear_points()
+	orbit_preview.points = predicted_points
 
-func add_gravity_body(body: GravityBody):
+func add_gravity_body(body: GravityBody) -> void:
 	celestial_bodies.append(body)
 	update_gravity_grid(celestial_bodies)
 
-func update_gravity_grid(bodies : Array[GravityBody]):
-	var mat := $Gravity_Grid.material as ShaderMaterial
+func update_gravity_grid(bodies : Array[GravityBody]) -> void:
+	# Updates the gravity grid shader to visualize gravitational fields
+	
+	var mat := gravity_grid.material as ShaderMaterial
 	var count = min(bodies.size(), 16)
 	mat.set_shader_parameter("point_count", count)
 	
@@ -194,7 +207,7 @@ func handle_star_placing(event: InputEventMouseButton) -> void:
 			body.body_deleted.connect(Callable(body_deleted))
 			body.body_move.connect(Callable(body_move))
 			body.place()
-			$SFX/StarPlacement.play()
+			star_placement_SFX.play()
 			finalize_placing()
 
 func handle_satellite_launch(event: InputEventMouseButton) -> void:
@@ -203,14 +216,14 @@ func handle_satellite_launch(event: InputEventMouseButton) -> void:
 	if event.button_index != MOUSE_BUTTON_LEFT:
 		return
 	if event.pressed:
-		if $CanvasLayer/Control/OptionPanels/SatLaunch/VBox/AutoOrbitsToggle.button_pressed:
+		if option_panels.auto_orbits_toggle.button_pressed:
 			# Auto circular orbit launch
 			var mouse_pos = get_global_mouse_position()
 			var closest = find_closest_body(mouse_pos)
 			var vel = calculate_launch_velocity(mouse_pos, closest.global_position, closest.mass) if closest != null else Vector2.ZERO
 			placing.velocity = vel
 			placing.spawned_debris.connect(Callable(debris_spawned))
-			$SFX/SatellitePlacement.play()
+			satellite_placement_SFX.play()
 			finalize_placing()
 		else:
 			# Begin drag for launch
@@ -224,20 +237,33 @@ func handle_satellite_launch(event: InputEventMouseButton) -> void:
 			var drag_dir = end_pos.direction_to(started_drag)
 			placing.velocity = drag_length * drag_dir
 			placing.spawned_debris.connect(Callable(debris_spawned))
-			$SFX/SatellitePlacement.play()
+			satellite_placement_SFX.play()
 			finalize_placing()
 
 
 # UTILS
 # -------------------------------------------------
 
+func start_entity_placement(idx : int, placementState : PlacementState, scene : PackedScene ,holder : Node2D) -> void:
+	clear_selection()
+	start_placing_mode(placementState)
+	var new_entity = scene.instantiate()
+	new_entity.global_position = get_global_mouse_position()
+	holder.add_child(new_entity)
+	if new_entity.has_method("set_type"):
+		new_entity.set_type(idx)
+	placing_type = idx
+	placing = new_entity
+
 func calculate_launch_velocity(satellite_pos: Vector2, planet_pos: Vector2, planet_mass: float) -> Vector2:
+	# Calculates the launch velocity required for a satellite to enter a circular orbit when "auto_orbits" is toggled on
+	
 	var gravity_direction = (planet_pos - satellite_pos).normalized()
 	var distance = satellite_pos.distance_to(planet_pos)
 	var launch_speed = sqrt(Global.gravitational_constant * planet_mass / distance)
 
 	var rotated_dir = Vector2.ZERO
-	if $CanvasLayer/Control/OptionPanels/SatLaunch/VBox/OrbitDirectionToggle.button_pressed:
+	if orbit_direction_reversed:
 		rotated_dir = Vector2(-gravity_direction.y, gravity_direction.x)
 	else:
 		rotated_dir = Vector2(gravity_direction.y, -gravity_direction.x)
@@ -245,9 +271,11 @@ func calculate_launch_velocity(satellite_pos: Vector2, planet_pos: Vector2, plan
 	return launch_speed * rotated_dir
 
 func find_closest_body(pos: Vector2) -> GravityBody:
+	# Fimds the closest celestial body to a position
+	
 	var closest: GravityBody = null
 	var min_dist := INF
-	for body: GravityBody in $Elements/Stars.get_children():
+	for body: GravityBody in celestial_bodies:
 		var dist = body.global_position.distance_to(pos)
 		if dist < min_dist:
 			min_dist = dist
@@ -255,22 +283,23 @@ func find_closest_body(pos: Vector2) -> GravityBody:
 	return closest
 
 func finalize_placing() -> void:
+	# Runs when an entity has been placed, clears all placement related elements
+	
 	if not is_instance_valid(placing):
 		return
 	placing.place()
 	started_drag = Vector2.ZERO
 	drag_line.clear_points()
-	$OrbitPreview.clear_points()
+	orbit_preview.clear_points()
 	
 	if placing is GravityBody:
-		print("Placing")
 		add_gravity_body(placing)
 	
 	end_placing_mode()
 
 func clear_selection() -> void:
 	if selected_body:
-		$CanvasLayer/Control/PlanetSettings.toggle(false)
+		planet_settings.toggle(false)
 		selected_body.unselect()
 		selected_body = null
 
@@ -283,14 +312,16 @@ func clicked_body(body: GravityBody) -> void:
 	
 	toggle_celestial_body_panel(true, body)
 
-func body_deleted(body):
-	$SFX/Vanish.play()
+func body_deleted(body) -> void:
+	vanish_SFX.play()
 	clear_selection()
 	if body in celestial_bodies:
 		celestial_bodies.erase(body)
 	update_gravity_grid(celestial_bodies)
 
-func body_move(body):
+func body_move(body) -> void:
+	# Puts the celestian body back into "placing mode"
+	
 	var new_state = PlacementState.PLACING_STAR if body is GravityBody else PlacementState.PLACING_SATELLITE
 	start_placing_mode(new_state)
 	body.unselect()
@@ -301,13 +332,43 @@ func body_move(body):
 	body.body_move.disconnect(Callable(body_move))
 	placing = body
 
-func update_debug_panel():
-	$CanvasLayer/Control/DebugPanel/HBox/FPS_VBox/Value.text = str(int(Engine.get_frames_per_second()))
-	$CanvasLayer/Control/DebugPanel/HBox/Sats_VBox/Value.text = str($Elements/Satellites.get_child_count())
-	$CanvasLayer/Control/DebugPanel/HBox/Debris_VBox/Value.text = str($Elements/Debris.get_child_count())
-
 func toggle_celestial_body_panel(toggle_on : bool, body : GravityBody) -> void:
-	$CanvasLayer/Control/PlanetSettings.toggle(toggle_on, body)
+	planet_settings.toggle(toggle_on, body)
+
+func trails_changed(enabled : bool) -> void:
+	trails_enabled = enabled
+	if enabled:
+		pass
+	else:
+		for sat : Satellite in satellite_holder.get_children():
+			sat.clear_trail()
+
+func gravity_grid_changed(enabled : bool) -> void:
+	gravity_grid.visible = enabled
+
+func timewarp_changed(factor : int) -> void:
+	current_timewarp = factor
+	option_panels.timewarp_toggle.text = "x" + str(int(current_timewarp))
+
+func clear_all() -> void:
+	for body in star_holder.get_children():
+		body.queue_free()
+	for sat in satellite_holder.get_children():
+		sat.queue_free()
+	for debris in debris_holder.get_children():
+		debris.queue_free()
+	celestial_bodies.clear()
+	update_gravity_grid(celestial_bodies)
+
+func continuous_placement_changed(enabled : bool) -> void:
+	continuous_placement_enabled = enabled
+
+func auto_orbits_changed(enabled : bool) -> void:
+	auto_orbits_enabled = enabled
+
+func orbit_direction_changed(enabled : bool) -> void:
+	orbit_direction_reversed = enabled
+
 
 # PLACEMENT STATE MANAGEMENT
 # -------------------------------------------------
@@ -319,9 +380,7 @@ func start_placing_mode(type: PlacementState) -> void:
 	show_action_bar(false)
 
 func end_placing_mode(force := false) -> void:
-	var continuous = $CanvasLayer/Control/OptionPanels/General/VBox/ContinuosPlacementToggle.button_pressed
-
-	if force or not continuous:
+	if force or not continuous_placement_enabled:
 		placement_state = PlacementState.NONE
 		placing = null
 		show_action_bar(true)
@@ -361,43 +420,21 @@ func update_drag_line(pos: Vector2) -> void:
 # -------------------------------------------------
 
 func _on_satellite_unfold_pressed_button(idx: Variant) -> void:
-	$SFX/Click.play()
-	clear_selection()
-	start_placing_mode(PlacementState.PLACING_SATELLITE)
-	var new_sat = satellite_scene.instantiate()
-	$Elements/Satellites.add_child(new_sat)
-	placing_type = idx
-	placing = new_sat
+	click_SFX.play()
+	start_entity_placement(idx, PlacementState.PLACING_SATELLITE, satellite_scene, satellite_holder)
 
 func _on_star_unfold_pressed_button(idx: Variant) -> void:
-	$SFX/Click.play()
-	clear_selection()
-	start_placing_mode(PlacementState.PLACING_STAR)
-	var new_star = star_scene.instantiate()
-	new_star.global_position = get_global_mouse_position()
-	$Elements/Stars.add_child(new_star)
-	new_star.set_type(idx)
-	placing_type = idx
-	placing = new_star
+	click_SFX.play()
+	start_entity_placement(idx, PlacementState.PLACING_STAR, star_scene, star_holder)
 
-func debris_spawned(debris : Debris):
-	$Elements/Debris.call_deferred("add_child", debris)
+func debris_spawned(debris : Debris) -> void:
+	debris_holder.call_deferred("add_child", debris)
 
 func vertical_unfolder_unfolded(unfolder: VerticalUnfold) -> void:
-	$SFX/Click.play()
-	for v_unfold: VerticalUnfold in $CanvasLayer/Control/ActionBar/HBox.get_children():
+	click_SFX.play()
+	for v_unfold: VerticalUnfold in action_bar.get_node("HBox").get_children():
 		if not v_unfold.folded and v_unfold != unfolder:
 			v_unfold.toggle_fold()
-
-func _on_trails_toggle_toggled(toggled_on: bool) -> void:
-	if toggled_on:
-		pass
-	else:
-		for sat : Satellite in $Elements/Satellites.get_children():
-			sat.clear_trail()
-
-func _on_gravity_grid_toggle_toggled(toggled_on: bool) -> void:
-	$Gravity_Grid.visible = toggled_on
 
 func _on_planet_settings_body_mass_changed() -> void:
 	update_gravity_grid(celestial_bodies)

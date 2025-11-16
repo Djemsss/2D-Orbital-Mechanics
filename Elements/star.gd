@@ -1,6 +1,9 @@
 extends GravityBody
 class_name Star
 
+## Represents an unmoving star which has a gravitational field
+
+
 const EDIT_TOOL_PADDING: Vector2 = Vector2(70, 70)
 
 var STAR_TYPES : Dictionary = {
@@ -27,7 +30,7 @@ signal body_move(GravityBody)
 
 func place():
 	placed = true
-	$Area2D/CollisionShape2D.set_deferred("disabled", false)
+	collision_shape_2d.set_deferred("disabled", false)
 
 func set_type(newType : int) -> void:
 	type = STAR_TYPES.size() - 1 - newType
