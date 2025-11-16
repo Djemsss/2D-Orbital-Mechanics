@@ -69,7 +69,7 @@ animations = [{
 }]
 
 [sub_resource type="Curve" id="Curve_4h4dh"]
-_data = [Vector2(0, 0.202247), 0.0, 0.0, 0, 0, Vector2(0.772358, 0.382023), 0.674157, 0.674157, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 0.303371), 0.0, 0.0, 0, 0, Vector2(0.772358, 0.494382), 0.674157, 0.674157, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 3
 
 [sub_resource type="Gradient" id="Gradient_4h4dh"]

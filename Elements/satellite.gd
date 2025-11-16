@@ -11,7 +11,7 @@ var placed : bool = false
 var last_placed_trail_point : Vector2 = Vector2.ZERO
 var destroyed : bool = false
 
-@onready var sprite : Sprite2D = $Sprite
+@onready var sprite : AnimatedSprite2D = $Sprite
 @onready var trail_line : Line2D = $Node/Line2D
 @onready var collision_shape : CollisionShape2D = $CollisionShape2D
 

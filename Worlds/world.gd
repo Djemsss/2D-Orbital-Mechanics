@@ -351,12 +351,12 @@ func timewarp_changed(factor : int) -> void:
 	option_panels.timewarp_toggle.text = "x" + str(int(current_timewarp))
 
 func clear_all() -> void:
-	for body in star_holder.get_children():
+	var deletables : Array = star_holder.get_children() + satellite_holder.get_children() + debris_holder.get_children()
+	
+	for body in deletables:
+		if body == placing:
+			continue
 		body.queue_free()
-	for sat in satellite_holder.get_children():
-		sat.queue_free()
-	for debris in debris_holder.get_children():
-		debris.queue_free()
 	celestial_bodies.clear()
 	update_gravity_grid(celestial_bodies)
 
