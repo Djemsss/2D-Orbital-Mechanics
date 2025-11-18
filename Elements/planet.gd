@@ -4,6 +4,7 @@ class_name Planet
 ## Represents an unmoving planet which has a gravitational field
 
 
+const ATMOSPHERE_BASE_SPRITE_SIZE : Vector2 = Vector2(1024, 1024)
 const EDIT_TOOL_PADDING: Vector2 = Vector2(70, 70)
 
 var PLANET_TYPES : Dictionary = {
@@ -22,9 +23,16 @@ var PLANET_TYPES : Dictionary = {
 var type : int = 0
 var size : float = 1.0
 
+var planet_radius : float = 1.0
+var atmosphere_radius : float = 1.0
+var atmosphere_height_fraction : float = 0.8
+var atmosphere_density : float = 0.8
+
 @onready var sprite : AnimatedSprite2D = $Sprite
-@onready var atmosphere : Sprite2D = $Atmosphere
 @onready var collision_shape_2d : CollisionShape2D = $Area2D/CollisionShape2D
+@onready var atmosphere : Sprite2D = $Atmosphere
+@onready var atmosphere_area : Area2D = $AtmosphereArea
+@onready var atmosphere_collision_shape : CollisionShape2D = $AtmosphereArea/CollisionShape2D
 @onready var light_occluder : LightOccluder2D = $LightOccluder2D
 @onready var edit_tools : EditTools = $EditTools
 
@@ -32,6 +40,23 @@ signal selected_body(GravityBody)
 signal body_deleted(GravityBody)
 signal body_move(GravityBody)
 
+# PROCESS
+# -------------------------------------------------
+
+func _physics_process(delta: float) -> void:
+	if placed:
+		apply_atmospheric_drag(delta)
+
+func apply_atmospheric_drag(delta : float) -> void:
+	for body in atmosphere_area.get_overlapping_bodies():
+		if body is Satellite or body is Debris:
+			body.process_atmospheric_drag(get_density_at_orbiter_height(body), delta)
+
+func get_density_at_orbiter_height(body : CharacterBody2D) -> float:
+	var h = (global_position.distance_to(body.global_position) - planet_radius)
+	var max_h = atmosphere_radius - planet_radius
+	var x = clamp(h / max_h, 0.0, 1.0)
+	return atmosphere_density * exp(-x * 3)
 
 # SETUP & STATE
 # -------------------------------------------------
@@ -48,14 +73,20 @@ func set_type(newType : int) -> void:
 	edit_tools.set_body_name(PLANET_TYPES[type].name)
 
 func resize(newScale : float) -> void:
+	var scaled_down_value : float = newScale * 0.2
 	size = newScale
-	sprite.scale = Vector2(newScale, newScale) / 5.5
-	collision_shape_2d.shape.radius = sprite_base_size.x * newScale / 2 + newScale * 6
+	sprite.scale = Vector2(scaled_down_value, scaled_down_value)
+	planet_radius = scaled_down_value * 120
+	collision_shape_2d.shape.radius = planet_radius
 	
-	atmosphere.scale = Vector2(newScale, newScale) / 12
+	atmosphere.scale = (Vector2(scaled_down_value, scaled_down_value) / 4) * (1 + atmosphere_height_fraction)
+	atmosphere_radius = scaled_down_value * 3570 * 0.25 * (1 + atmosphere_height_fraction)
+	atmosphere_collision_shape.shape.radius = atmosphere_radius
+	atmosphere.modulate.a = atmosphere_density
+	
 	light_occluder.scale = Vector2(newScale, newScale) * 2
 	
-	edit_tools.size = sprite_base_size * newScale + EDIT_TOOL_PADDING
+	edit_tools.size = Vector2(newScale, newScale) * 50 + EDIT_TOOL_PADDING
 	edit_tools.position = Vector2(-edit_tools.size.x / 2, -edit_tools.size.y / 2)
 
 func select() -> void:

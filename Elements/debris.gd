@@ -40,6 +40,8 @@ func process_gravity(delta : float, bodyList : Array) -> void:
 			velocity = lerp(velocity, combined, 0.2)
 			other.velocity = lerp(other.velocity, combined, 0.2)
 
+func process_atmospheric_drag(atmosphere_density : float, delta : float) -> void:
+	velocity = lerp(velocity, Vector2(0, 0), atmosphere_density * delta * 0.08)
 
 # SETUP
 # -------------------------------------------------

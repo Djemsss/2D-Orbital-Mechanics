@@ -39,8 +39,8 @@ func set_type(newType : int) -> void:
 	sprite.frame = type
 	var newScale = type + 2 + randf_range(-0.2, 0.2)
 	resize(newScale)
-	light.color = STAR_TYPES[type].light_color
-	light2.color = STAR_TYPES[type].light_color
+	light.color = (STAR_TYPES[type].light_color).lightened(0.5)
+	light2.color = (STAR_TYPES[type].light_color).lightened(0.5)
 	edit_tools.set_body_name(STAR_TYPES[type].name)
 
 func resize(newScale : float) -> void:

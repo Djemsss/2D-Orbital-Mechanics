@@ -69,6 +69,7 @@ animations = [{
 }]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_y6lxp"]
+light_mode = 1
 
 [sub_resource type="Curve" id="Curve_4h4dh"]
 _data = [Vector2(0, 0.303371), 0.0, 0.0, 0, 0, Vector2(0.772358, 0.494382), 0.674157, 0.674157, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]

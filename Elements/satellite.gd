@@ -27,8 +27,11 @@ func _ready() -> void:
 	sprite.rotation_degrees = randi_range(0, 360)
 	
 	# Random trail color
-	trail_line.gradient.set_color(0, Color(randf(), randf(), randf(), 0.0))
-	trail_line.gradient.set_color(1, Color(randf(), randf(), randf(), 1.0))
+	var random_r : float = randf()
+	var random_g : float = randf()
+	var random_b : float = randf()
+	trail_line.gradient.set_color(0, Color(random_r, random_g, random_b, 0.0))
+	trail_line.gradient.set_color(1, Color(random_r, random_g, random_b, 1.0))
 
 func process_gravity(delta : float, bodyList : Array):
 	# Applies combined gravitational forces from all the bodies in "bodyList"
@@ -64,6 +67,8 @@ func process_trail() -> void:
 		trail_line.add_point(global_position)
 		last_placed_trail_point = global_position
 
+func process_atmospheric_drag(atmosphere_density : float, delta : float) -> void:
+	velocity = lerp(velocity, Vector2(0, 0), atmosphere_density * delta * 0.08)
 
 # UTILS
 # -------------------------------------------------
