@@ -1,0 +1,8 @@
+[gd_resource type="CanvasTexture" load_steps=3 format=3 uid="uid://bm7qjc0nrlru3"]
+
+[ext_resource type="Texture2D" uid="uid://couo5nklek1uf" path="res://Assets/img/Planets/Planet (1).png" id="1_0mjpx"]
+[ext_resource type="Texture2D" uid="uid://bv3ir5p38s7fp" path="res://Assets/img/Textures/Gradient_normal.png" id="2_dnu8e"]
+
+[resource]
+diffuse_texture = ExtResource("1_0mjpx")
+normal_texture = ExtResource("2_dnu8e")

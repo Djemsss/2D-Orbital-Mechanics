@@ -1,5 +1,7 @@
 shader_type canvas_item;
 
+render_mode unshaded;
+
 uniform float speed : hint_range(0.0, 2.0) = 0.08;
 uniform float intensity : hint_range(0.0, 0.05) = 0.008;
 uniform float haze_strength : hint_range(0.0, 1.0) = 0.5;

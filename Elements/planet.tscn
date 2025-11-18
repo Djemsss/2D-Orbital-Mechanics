@@ -1,0 +1,95 @@
+[gd_scene load_steps=17 format=3 uid="uid://dpw3lcrjhn0af"]
+
+[ext_resource type="Script" uid="uid://c0d15pgoh8s38" path="res://Elements/planet.gd" id="1_6wclm"]
+[ext_resource type="Texture2D" uid="uid://bm7qjc0nrlru3" path="res://Assets/img/Planets/1.tres" id="2_0lohc"]
+[ext_resource type="Texture2D" uid="uid://b8wh1egspd6kl" path="res://Assets/img/Planets/Atmosphere.tres" id="2_lah4t"]
+[ext_resource type="Texture2D" uid="uid://cuj6ihusabo6p" path="res://Assets/img/Planets/2.tres" id="3_a040u"]
+[ext_resource type="Texture2D" uid="uid://d2oyc6yxo0y1l" path="res://Assets/img/Planets/3.tres" id="4_0lohc"]
+[ext_resource type="Texture2D" uid="uid://bsg1aooel7fg" path="res://Assets/img/Planets/4.tres" id="5_lah4t"]
+[ext_resource type="Texture2D" uid="uid://debbivsdwou3n" path="res://Assets/img/Planets/5.tres" id="6_rquu1"]
+[ext_resource type="PackedScene" uid="uid://cwi20kh8j71f2" path="res://UI/edit_tools.tscn" id="7_0lohc"]
+[ext_resource type="Texture2D" uid="uid://t17rgrwqvrec" path="res://Assets/img/Planets/6.tres" id="7_gssxn"]
+[ext_resource type="Texture2D" uid="uid://jn8x76dth8ub" path="res://Assets/img/Planets/7.tres" id="8_msvpv"]
+[ext_resource type="Texture2D" uid="uid://ctehe2e247gwy" path="res://Assets/img/Planets/8.tres" id="9_qxlhl"]
+[ext_resource type="Texture2D" uid="uid://7hteweygvrfm" path="res://Assets/img/Planets/9.tres" id="10_r8ryv"]
+[ext_resource type="Texture2D" uid="uid://4iss10b8kdlb" path="res://Assets/img/Planets/10.tres" id="11_8v3sc"]
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_0lohc"]
+polygon = PackedVector2Array(0, -12, 1, -12, 5, -11, 8, -9, 10, -7, 11, -5, 12, -2, 12, 1, 11, 5, 10, 7, 8, 9, 5, 11, 2, 12, 0, 12, -2, 12, -5, 11, -7, 10, -9, 8, -11, 5, -12, 1, -12, -2, -11, -5, -9, -8, -7, -10, -3, -12)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6eyid"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_0lohc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_a040u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_0lohc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_lah4t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_rquu1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_gssxn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_msvpv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_qxlhl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_r8ryv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_8v3sc")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_saxxo"]
+resource_local_to_scene = true
+radius = 16.0
+
+[node name="Planet" type="Node2D"]
+script = ExtResource("1_6wclm")
+mass = 1000000
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="."]
+light_mask = 2
+scale = Vector2(2.855, 2.855)
+occluder = SubResource("OccluderPolygon2D_0lohc")
+occluder_light_mask = 2
+
+[node name="Atmosphere" type="Sprite2D" parent="."]
+modulate = Color(1, 0.0292234, 0, 1)
+scale = Vector2(0.14, 0.14)
+texture = ExtResource("2_lah4t")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.1, 0.1)
+sprite_frames = SubResource("SpriteFrames_6eyid")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+visible = false
+shape = SubResource("CircleShape2D_saxxo")
+disabled = true
+
+[node name="EditTools" parent="." instance=ExtResource("7_0lohc")]
+visible = false
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
+[connection signal="pressed_delete" from="EditTools" to="." method="_on_edit_tools_pressed_delete"]
+[connection signal="pressed_move" from="EditTools" to="." method="_on_edit_tools_pressed_move"]

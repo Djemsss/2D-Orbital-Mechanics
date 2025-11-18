@@ -4,12 +4,13 @@ class_name World
 ## Main game scene
 
 
+const planet_scene = preload("res://Elements/planet.tscn")
 const star_scene = preload("res://Elements/star.tscn")
 const satellite_scene = preload("res://Elements/satellite.tscn")
 
 @export var placing_mode_time := 0.2
 
-enum PlacementState { NONE, PLACING_STAR, PLACING_SATELLITE }
+enum PlacementState { NONE, PLACING_PLANET, PLACING_STAR, PLACING_SATELLITE}
 var placement_state : PlacementState = PlacementState.NONE
 
 var TimewarpOptions : Array[float] = [0, 1, 2, 5]
@@ -39,8 +40,9 @@ var celestial_bodies : Array[GravityBody] = []
 @onready var planet_settings : PlanetSettings = $CanvasLayer/Control/PlanetSettings 
 @onready var action_bar : Panel = $CanvasLayer/Control/ActionBar
 
-@onready var satellite_holder : Node2D = $Elements/Satellites
+@onready var planet_holder : Node2D = $Elements/Planets
 @onready var star_holder : Node2D = $Elements/Stars
+@onready var satellite_holder : Node2D = $Elements/Satellites
 @onready var debris_holder : Node2D = $Elements/Debris
 
 @onready var gravity_grid : Sprite2D = $Gravity_Grid
@@ -126,7 +128,7 @@ func update_orbit_preview(mouse_pos: Vector2) -> void:
 	var launch_velocity = drag_length * drag_dir
 
 	var start_pos = placing.global_position
-	var bodies = star_holder.get_children().filter(func(b): return b.placed)
+	var bodies = celestial_bodies #(star_holder.get_children() + planet_holder.get_children()).filter(func(b): return b.placed)
 	var predicted_points = predict_orbit_path(start_pos, launch_velocity, bodies, 5.0, 0.02)
 	
 	orbit_preview.clear_points()
@@ -169,10 +171,10 @@ func _input(event: InputEvent) -> void:
 			end_placing_mode(true)
 		clear_selection()
 		return
-	if placement_state in [PlacementState.PLACING_STAR, PlacementState.PLACING_SATELLITE]:
+	if placement_state != PlacementState.NONE:
 		if get_viewport().gui_get_hovered_control() and get_viewport().gui_get_hovered_control().mouse_filter == Control.MOUSE_FILTER_STOP:
 			return
-	if placement_state in [PlacementState.PLACING_STAR, PlacementState.PLACING_SATELLITE]:
+	if placement_state != PlacementState.NONE:
 		if event is InputEventMouseMotion:
 			if started_drag == Vector2.ZERO:
 				if is_instance_valid(placing):
@@ -192,10 +194,25 @@ func _input(event: InputEvent) -> void:
 
 func handle_mouse_button(event: InputEventMouseButton) -> void:
 	match placement_state:
+		PlacementState.PLACING_PLANET:
+			handle_planet_placing(event)
 		PlacementState.PLACING_STAR:
 			handle_star_placing(event)
 		PlacementState.PLACING_SATELLITE:
 			handle_satellite_launch(event)
+
+func handle_planet_placing(event: InputEventMouseButton) -> void:
+	if not is_instance_valid(placing):
+		return
+	if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		var body := placing as GravityBody
+		if body:
+			body.selected_body.connect(Callable(clicked_body))
+			body.body_deleted.connect(Callable(body_deleted))
+			body.body_move.connect(Callable(body_move))
+			body.place()
+			star_placement_SFX.play()
+			finalize_placing()
 
 func handle_star_placing(event: InputEventMouseButton) -> void:
 	if not is_instance_valid(placing):
@@ -321,8 +338,7 @@ func body_deleted(body) -> void:
 
 func body_move(body) -> void:
 	# Puts the celestian body back into "placing mode"
-	
-	var new_state = PlacementState.PLACING_STAR if body is GravityBody else PlacementState.PLACING_SATELLITE
+	var new_state = PlacementState.PLACING_PLANET if body is Planet else PlacementState.PLACING_STAR
 	start_placing_mode(new_state)
 	body.unselect()
 	if body in celestial_bodies:
@@ -351,7 +367,8 @@ func timewarp_changed(factor : int) -> void:
 	option_panels.timewarp_toggle.text = "x" + str(int(current_timewarp))
 
 func clear_all() -> void:
-	var deletables : Array = star_holder.get_children() + satellite_holder.get_children() + debris_holder.get_children()
+	clear_selection()
+	var deletables : Array = planet_holder.get_children() + star_holder.get_children() + satellite_holder.get_children() + debris_holder.get_children()
 	
 	for body in deletables:
 		if body == placing:
@@ -386,6 +403,8 @@ func end_placing_mode(force := false) -> void:
 		show_action_bar(true)
 	else:
 		match placement_state:
+			PlacementState.PLACING_PLANET:
+				_on_planet_unfold_pressed_button(placing_type)
 			PlacementState.PLACING_STAR:
 				_on_star_unfold_pressed_button(placing_type)
 			PlacementState.PLACING_SATELLITE:
@@ -419,13 +438,17 @@ func update_drag_line(pos: Vector2) -> void:
 # SIGNAL CALLBACKS
 # -------------------------------------------------
 
-func _on_satellite_unfold_pressed_button(idx: Variant) -> void:
+func _on_planet_unfold_pressed_button(idx: int) -> void:
 	click_SFX.play()
-	start_entity_placement(idx, PlacementState.PLACING_SATELLITE, satellite_scene, satellite_holder)
+	start_entity_placement(idx, PlacementState.PLACING_PLANET, planet_scene, planet_holder)
 
 func _on_star_unfold_pressed_button(idx: Variant) -> void:
 	click_SFX.play()
 	start_entity_placement(idx, PlacementState.PLACING_STAR, star_scene, star_holder)
+
+func _on_satellite_unfold_pressed_button(idx: Variant) -> void:
+	click_SFX.play()
+	start_entity_placement(idx, PlacementState.PLACING_SATELLITE, satellite_scene, satellite_holder)
 
 func debris_spawned(debris : Debris) -> void:
 	debris_holder.call_deferred("add_child", debris)

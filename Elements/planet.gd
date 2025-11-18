@@ -1,25 +1,31 @@
 extends GravityBody
-class_name Star
+class_name Planet
 
-## Represents an unmoving star which has a gravitational field
+## Represents an unmoving planet which has a gravitational field
 
 
 const EDIT_TOOL_PADDING: Vector2 = Vector2(70, 70)
 
-var STAR_TYPES : Dictionary = {
-	0:  {"name": "Yellow Dwarf", "light_color": Color.YELLOW},
-	1:  {"name": "Orange Dwarf", "light_color": Color.ORANGE},
-	2:  {"name": "Red Dwarf", "light_color": Color.RED},
-	3 : {"name": "Blue Giant", "light_color": Color.BLUE}
+var PLANET_TYPES : Dictionary = {
+	0:  {"name": "Arid Planet"},
+	1:  {"name": "Earth Like Planet"},
+	2:  {"name": "Cratered Planet"},
+	3 : {"name": "Deserted Planet"},
+	4 : {"name": "Frozen Planet"},
+	5 : {"name": "Moon"},
+	6 : {"name": "Lava Planet"},
+	7 : {"name": "Water Planet"},
+	8 : {"name": "Wet Planet"},
+	9 : {"name": "Barren Planet"}
 }
 
 var type : int = 0
 var size : float = 1.0
 
 @onready var sprite : AnimatedSprite2D = $Sprite
+@onready var atmosphere : Sprite2D = $Atmosphere
 @onready var collision_shape_2d : CollisionShape2D = $Area2D/CollisionShape2D
-@onready var light : PointLight2D = $LightingLight
-@onready var light2 : PointLight2D = $ShadowLight
+@onready var light_occluder : LightOccluder2D = $LightOccluder2D
 @onready var edit_tools : EditTools = $EditTools
 
 signal selected_body(GravityBody)
@@ -35,21 +41,19 @@ func place():
 	collision_shape_2d.set_deferred("disabled", false)
 
 func set_type(newType : int) -> void:
-	type = STAR_TYPES.size() - 1 - newType
+	type = newType
 	sprite.frame = type
-	var newScale = type + 2 + randf_range(-0.2, 0.2)
+	var newScale = 2 + randf_range(-0.5, 0.5)
 	resize(newScale)
-	light.color = STAR_TYPES[type].light_color
-	light2.color = STAR_TYPES[type].light_color
-	edit_tools.set_body_name(STAR_TYPES[type].name)
+	edit_tools.set_body_name(PLANET_TYPES[type].name)
 
 func resize(newScale : float) -> void:
 	size = newScale
 	sprite.scale = Vector2(newScale, newScale) / 5.5
-	collision_shape_2d.shape.radius = sprite_base_size.x * newScale / 2
+	collision_shape_2d.shape.radius = sprite_base_size.x * newScale / 2 + newScale * 6
 	
-	light.texture_scale = newScale
-	light2.texture_scale = newScale
+	atmosphere.scale = Vector2(newScale, newScale) / 12
+	light_occluder.scale = Vector2(newScale, newScale) * 2
 	
 	edit_tools.size = sprite_base_size * newScale + EDIT_TOOL_PADDING
 	edit_tools.position = Vector2(-edit_tools.size.x / 2, -edit_tools.size.y / 2)

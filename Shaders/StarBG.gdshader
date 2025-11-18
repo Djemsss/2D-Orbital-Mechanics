@@ -1,5 +1,7 @@
 shader_type canvas_item;
 
+render_mode unshaded;
+
 group_uniforms MainStars;
 //Main star adjustments: Color, movement direction, shine, brightnessStar, periodicity, size, and quantity.
 uniform sampler2D gradientA;

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bawm3qvkn8783"]
+[gd_scene load_steps=12 format=3 uid="uid://bawm3qvkn8783"]
 
 [ext_resource type="Script" uid="uid://1w1bswjiht2h" path="res://Elements/star.gd" id="1_pcduc"]
 [ext_resource type="Shader" uid="uid://dj60af0wvwp7w" path="res://Shaders/StarHaze.gdshader" id="2_a3dkv"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://b471vapp7bdv2" path="res://Assets/img/Stars/sprite_3.png" id="4_a3dkv"]
 [ext_resource type="Texture2D" uid="uid://boenug8daqk3w" path="res://Assets/img/Stars/sprite_4.png" id="5_8ii3x"]
 [ext_resource type="PackedScene" uid="uid://cwi20kh8j71f2" path="res://UI/edit_tools.tscn" id="6_0rsms"]
+[ext_resource type="Texture2D" uid="uid://cf55u6ftwymqb" path="res://Assets/img/Textures/Light.png" id="8_8ii3x"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8ii3x"]
 shader = ExtResource("2_a3dkv")
@@ -42,6 +43,21 @@ radius = 16.0
 [node name="Star" type="Node2D"]
 script = ExtResource("1_pcduc")
 mass = 1000000
+
+[node name="LightingLight" type="PointLight2D" parent="."]
+shadow_color = Color(0, 0, 0, 1)
+shadow_item_cull_mask = 3
+texture = ExtResource("8_8ii3x")
+height = 168.0
+
+[node name="ShadowLight" type="PointLight2D" parent="."]
+light_mask = 2
+range_item_cull_mask = 2
+shadow_enabled = true
+shadow_color = Color(0, 0, 0, 1)
+shadow_item_cull_mask = 2
+texture = ExtResource("8_8ii3x")
+height = 168.0
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1

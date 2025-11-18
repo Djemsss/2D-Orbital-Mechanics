@@ -1,10 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://cwi20kh8j71f2"]
+[gd_scene load_steps=5 format=3 uid="uid://cwi20kh8j71f2"]
 
 [ext_resource type="Script" uid="uid://btri2csmb2ljq" path="res://UI/edit_tools.gd" id="1_816dd"]
 [ext_resource type="Texture2D" uid="uid://behwbcfj4kieu" path="res://Assets/img/Icons/Move.png" id="1_ctn46"]
 [ext_resource type="Texture2D" uid="uid://djvf5npbj4da" path="res://Assets/img/Icons/Trash.png" id="2_816dd"]
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_816dd"]
+light_mode = 1
+
 [node name="EditTools" type="Control"]
+light_mask = 2
+visibility_layer = 2
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 3
 anchors_preset = 8
@@ -23,6 +28,9 @@ size_flags_vertical = 6
 script = ExtResource("1_816dd")
 
 [node name="BodyName" type="Label" parent="."]
+light_mask = 2
+visibility_layer = 2
+material = SubResource("CanvasItemMaterial_816dd")
 custom_minimum_size = Vector2(100, 30)
 layout_mode = 1
 anchors_preset = 5
@@ -36,6 +44,8 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="HBox" type="HBoxContainer" parent="."]
+light_mask = 2
+visibility_layer = 2
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -52,6 +62,9 @@ theme_override_constants/separation = 30
 alignment = 1
 
 [node name="MoveButton" type="TextureRect" parent="HBox"]
+light_mask = 2
+visibility_layer = 2
+material = SubResource("CanvasItemMaterial_816dd")
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 mouse_filter = 0
@@ -60,6 +73,9 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="TrashButton" type="TextureRect" parent="HBox"]
+light_mask = 2
+visibility_layer = 2
+material = SubResource("CanvasItemMaterial_816dd")
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 mouse_filter = 0

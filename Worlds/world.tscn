@@ -1,20 +1,30 @@
-[gd_scene load_steps=31 format=3 uid="uid://bxapoxbkcvb4p"]
+[gd_scene load_steps=41 format=3 uid="uid://bxapoxbkcvb4p"]
 
 [ext_resource type="Script" uid="uid://ckqwsx33cum74" path="res://Worlds/world.gd" id="1_4xfh2"]
 [ext_resource type="PackedScene" uid="uid://dlmls5pipfmug" path="res://UI/vertical_unfold.tscn" id="1_bl0d6"]
 [ext_resource type="Texture2D" uid="uid://8wclfm2h7740" path="res://Assets/img/Stars/sprite_2.png" id="3_fuoa0"]
+[ext_resource type="Texture2D" uid="uid://c22yo4xs6gkg7" path="res://Assets/img/Planets/Planet (8).png" id="3_higm1"]
 [ext_resource type="Texture2D" uid="uid://c32wj42rde1kh" path="res://Assets/img/Stars/sprite_1.png" id="4_04avt"]
 [ext_resource type="Texture2D" uid="uid://b471vapp7bdv2" path="res://Assets/img/Stars/sprite_3.png" id="4_r1b28"]
+[ext_resource type="Texture2D" uid="uid://couo5nklek1uf" path="res://Assets/img/Planets/Planet (1).png" id="4_ue26d"]
 [ext_resource type="Texture2D" uid="uid://boenug8daqk3w" path="res://Assets/img/Stars/sprite_4.png" id="5_04avt"]
+[ext_resource type="Texture2D" uid="uid://cpb7pmxxm0i1m" path="res://Assets/img/Planets/Planet (2).png" id="5_872ra"]
+[ext_resource type="Texture2D" uid="uid://bsmjpyo36vg33" path="res://Assets/img/Planets/Planet (3).png" id="6_cfdpw"]
 [ext_resource type="Texture2D" uid="uid://dwop4tarinyl6" path="res://Assets/img/Satellites/sprite_1.png" id="7_07imi"]
+[ext_resource type="Texture2D" uid="uid://ccayfttkgq8p" path="res://Assets/img/Planets/Planet (4).png" id="7_hp38g"]
 [ext_resource type="Texture2D" uid="uid://djvf5npbj4da" path="res://Assets/img/Icons/Trash.png" id="8_5es2h"]
 [ext_resource type="Shader" uid="uid://u6vcjlje6tqg" path="res://Shaders/StarBG.gdshader" id="8_hdcsk"]
 [ext_resource type="Script" uid="uid://c7e3kaxp0aigx" path="res://Worlds/planet_settings.gd" id="8_i53fm"]
+[ext_resource type="Texture2D" uid="uid://feech52ri4g2" path="res://Assets/img/Planets/Planet (5).png" id="8_spwyv"]
 [ext_resource type="Script" uid="uid://bqsi7nwsd02oh" path="res://Worlds/option_panels.gd" id="8_uy40c"]
 [ext_resource type="Script" uid="uid://ch4oiioabrx0v" path="res://Worlds/camera_2d.gd" id="8_w2mg1"]
+[ext_resource type="Texture2D" uid="uid://baa2qtuwjewkn" path="res://Assets/img/Planets/Planet (6).png" id="9_qltbb"]
 [ext_resource type="Texture2D" uid="uid://benwv3eahhraa" path="res://Assets/img/Grid.png" id="10_4qppp"]
+[ext_resource type="Texture2D" uid="uid://b54cshqxyeo35" path="res://Assets/img/Planets/Planet (7).png" id="10_itqnr"]
+[ext_resource type="Texture2D" uid="uid://3fs00cvyatmm" path="res://Assets/img/Planets/Planet (9).png" id="11_6vc0m"]
 [ext_resource type="Script" uid="uid://dthsyprxyu5q3" path="res://Worlds/debug_panel.gd" id="11_7586k"]
 [ext_resource type="Shader" uid="uid://dwtoak71wttwh" path="res://Shaders/GravityGrid.gdshader" id="12_25de1"]
+[ext_resource type="Texture2D" uid="uid://dhcgvb5rv268e" path="res://Assets/img/Planets/Planet (10).png" id="12_bmhbx"]
 [ext_resource type="AudioStream" uid="uid://duy6sjwh5uy0j" path="res://Assets/snd/SFX/LowThud.wav" id="13_qkl34"]
 [ext_resource type="AudioStream" uid="uid://vfafsedsqcxc" path="res://Assets/snd/SFX/SatPlacement.wav" id="14_6idkr"]
 [ext_resource type="AudioStream" uid="uid://cdlsf2tl6uatk" path="res://Assets/snd/SFX/UI_Click.wav" id="14_qkl34"]
@@ -86,6 +96,9 @@ point_count = 2
 [node name="World" type="Node2D"]
 script = ExtResource("1_4xfh2")
 
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.117647, 0.117647, 0.117647, 1)
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="Control" type="Control" parent="CanvasLayer"]
@@ -98,7 +111,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="ActionBar" type="Panel" parent="CanvasLayer/Control"]
-custom_minimum_size = Vector2(160, 80)
+custom_minimum_size = Vector2(240, 80)
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -115,6 +128,246 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
 alignment = 1
+
+[node name="PlanetUnfold" parent="CanvasLayer/Control/ActionBar/HBox" instance=ExtResource("1_bl0d6")]
+layout_mode = 2
+element_names = Array[String](["Arid Planet", "Earth Like Planet", "Cratered Planet", "Deserted Planet", "Frozen Planet", "Moon", "Lava Planet", "Water Planet", "Wet Planet", "Barren Planet"])
+
+[node name="DeployIcon" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/DeployButton" index="0"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+texture = ExtResource("3_higm1")
+
+[node name="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox/Button" index="0"]
+texture = ExtResource("4_ue26d")
+
+[node name="Button2" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox" index="1"]
+clip_contents = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox/Button2"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_872ra")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button3" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox" index="2"]
+clip_contents = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox/Button3"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_cfdpw")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button4" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox" index="3"]
+clip_contents = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox/Button4"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("7_hp38g")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button5" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox" index="4"]
+clip_contents = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox/Button5"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_spwyv")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button6" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox" index="5"]
+clip_contents = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox/Button6"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9_qltbb")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button7" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox" index="6"]
+clip_contents = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox/Button7"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("10_itqnr")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button8" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox" index="7"]
+clip_contents = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox/Button8"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_higm1")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button9" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox" index="8"]
+clip_contents = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox/Button9"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("11_6vc0m")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button10" type="Panel" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox" index="9"]
+clip_contents = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold/Panel/VBox/Button10"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("12_bmhbx")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="StarUnfold" parent="CanvasLayer/Control/ActionBar/HBox" instance=ExtResource("1_bl0d6")]
 layout_mode = 2
@@ -647,9 +900,11 @@ default_color = Color(0.0785339, 1, 0, 1)
 
 [node name="Elements" type="Node2D" parent="."]
 
-[node name="Satellites" type="Node2D" parent="Elements"]
+[node name="Planets" type="Node2D" parent="Elements"]
 
 [node name="Stars" type="Node2D" parent="Elements"]
+
+[node name="Satellites" type="Node2D" parent="Elements"]
 
 [node name="Debris" type="Node2D" parent="Elements"]
 
@@ -676,6 +931,8 @@ stream = ExtResource("16_i53fm")
 stream = ExtResource("17_5es2h")
 volume_db = -10.0
 
+[connection signal="pressed_button" from="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold" to="." method="_on_planet_unfold_pressed_button"]
+[connection signal="unfolded" from="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold" to="." method="vertical_unfolder_unfolded"]
 [connection signal="pressed_button" from="CanvasLayer/Control/ActionBar/HBox/StarUnfold" to="." method="_on_star_unfold_pressed_button"]
 [connection signal="unfolded" from="CanvasLayer/Control/ActionBar/HBox/StarUnfold" to="." method="vertical_unfolder_unfolded"]
 [connection signal="pressed_button" from="CanvasLayer/Control/ActionBar/HBox/SatelliteUnfold" to="." method="_on_satellite_unfold_pressed_button"]
@@ -691,5 +948,6 @@ volume_db = -10.0
 [connection signal="value_changed" from="CanvasLayer/Control/PlanetSettings/VBox/HBoxSize/SizeSlider" to="CanvasLayer/Control/PlanetSettings" method="_on_size_slider_value_changed"]
 [connection signal="value_changed" from="CanvasLayer/Control/PlanetSettings/VBox/HBoxMass/MassSlider" to="CanvasLayer/Control/PlanetSettings" method="_on_mass_slider_value_changed"]
 
+[editable path="CanvasLayer/Control/ActionBar/HBox/PlanetUnfold"]
 [editable path="CanvasLayer/Control/ActionBar/HBox/StarUnfold"]
 [editable path="CanvasLayer/Control/ActionBar/HBox/SatelliteUnfold"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cqpu1p618b2ym"]
+[gd_scene load_steps=21 format=3 uid="uid://cqpu1p618b2ym"]
 
 [ext_resource type="Script" uid="uid://dhebink5cv0fx" path="res://Elements/satellite.gd" id="1_twluq"]
 [ext_resource type="Texture2D" uid="uid://dwop4tarinyl6" path="res://Assets/img/Satellites/sprite_1.png" id="2_4h4dh"]
@@ -68,6 +68,8 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_y6lxp"]
+
 [sub_resource type="Curve" id="Curve_4h4dh"]
 _data = [Vector2(0, 0.303371), 0.0, 0.0, 0, 0, Vector2(0.772358, 0.494382), 0.674157, 0.674157, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 3
@@ -77,6 +79,8 @@ resource_local_to_scene = true
 colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1)
 
 [node name="Satellite" type="CharacterBody2D"]
+light_mask = 3
+visibility_layer = 3
 z_index = 1
 motion_mode = 1
 script = ExtResource("1_twluq")
@@ -86,6 +90,7 @@ shape = SubResource("CircleShape2D_4h4dh")
 disabled = true
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
+light_mask = 2
 scale = Vector2(0.2, 0.2)
 sprite_frames = SubResource("SpriteFrames_ve0xn")
 
@@ -94,6 +99,7 @@ sprite_frames = SubResource("SpriteFrames_ve0xn")
 [node name="Line2D" type="Line2D" parent="Node"]
 show_behind_parent = true
 z_as_relative = false
+material = SubResource("CanvasItemMaterial_y6lxp")
 width = 3.0
 width_curve = SubResource("Curve_4h4dh")
 gradient = SubResource("Gradient_4h4dh")
