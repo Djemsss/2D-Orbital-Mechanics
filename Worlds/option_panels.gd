@@ -19,6 +19,7 @@ signal clear_all()
 signal continuous_placement_changed(enabled : bool)
 signal auto_orbits_changed(enabled : bool)
 signal orbit_direction_changed(enabled : bool)
+signal lighting_changed(enabled : bool)
 
 
 # SIGNAL CALLBACKS
@@ -46,3 +47,6 @@ func _on_auto_orbits_toggle_toggled(toggled_on: bool) -> void:
 
 func _on_orbit_direction_toggle_toggled(toggled_on: bool) -> void:
 	emit_signal("orbit_direction_changed", toggled_on)
+
+func _on_lighting_toggle_toggled(toggled_on: bool) -> void:
+	emit_signal("lighting_changed", toggled_on)

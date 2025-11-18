@@ -28,12 +28,14 @@ var trails_enabled : bool = true
 var continuous_placement_enabled : bool = false
 var auto_orbits_enabled : bool = false
 var orbit_direction_reversed : bool = false
+var lighting_enabled : bool = true
 
 var celestial_bodies : Array[GravityBody] = []
 
 @onready var drag_line : Line2D = $DragLine
 @onready var orbit_preview : Line2D = $OrbitPreview
 @onready var camera : Camera2D = $Camera2D
+@onready var canvas_modulate : CanvasModulate = $CanvasModulate
 
 @onready var option_panels : OptionPanels = $CanvasLayer/Control/OptionPanels
 @onready var debug_panel : DebugPanel = $CanvasLayer/Control/DebugPanel
@@ -73,6 +75,7 @@ func _ready() -> void:
 	option_panels.continuous_placement_changed.connect(Callable(continuous_placement_changed))
 	option_panels.auto_orbits_changed.connect(Callable(auto_orbits_changed))
 	option_panels.orbit_direction_changed.connect(Callable(orbit_direction_changed))
+	option_panels.lighting_changed.connect(Callable(lighting_changed))
 
 func _physics_process(delta: float) -> void:
 	simulate_orbits(delta)
@@ -165,7 +168,7 @@ func update_gravity_grid(bodies : Array[GravityBody]) -> void:
 # -------------------------------------------------
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_cancel") or (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed):
 		if placing:
 			placing.queue_free()
 			end_placing_mode(true)
@@ -205,7 +208,7 @@ func handle_planet_placing(event: InputEventMouseButton) -> void:
 	if not is_instance_valid(placing):
 		return
 	if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		var body := placing as GravityBody
+		var body : Planet = placing
 		if body:
 			body.selected_body.connect(Callable(clicked_body))
 			body.body_deleted.connect(Callable(body_deleted))
@@ -218,7 +221,7 @@ func handle_star_placing(event: InputEventMouseButton) -> void:
 	if not is_instance_valid(placing):
 		return
 	if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		var body := placing as GravityBody
+		var body : Star = placing
 		if body:
 			body.selected_body.connect(Callable(clicked_body))
 			body.body_deleted.connect(Callable(body_deleted))
@@ -263,12 +266,15 @@ func handle_satellite_launch(event: InputEventMouseButton) -> void:
 
 func start_entity_placement(idx : int, placementState : PlacementState, scene : PackedScene ,holder : Node2D) -> void:
 	clear_selection()
+	option_panels.show()
 	start_placing_mode(placementState)
 	var new_entity = scene.instantiate()
 	new_entity.global_position = get_global_mouse_position()
 	holder.add_child(new_entity)
 	if new_entity.has_method("set_type"):
 		new_entity.set_type(idx)
+	if new_entity.has_method("toggle_lighting"):
+		new_entity.toggle_lighting(lighting_enabled)
 	placing_type = idx
 	placing = new_entity
 
@@ -386,6 +392,11 @@ func auto_orbits_changed(enabled : bool) -> void:
 func orbit_direction_changed(enabled : bool) -> void:
 	orbit_direction_reversed = enabled
 
+func lighting_changed(enabled : bool) -> void:
+	lighting_enabled = enabled
+	canvas_modulate.visible = enabled
+	for star : Star in star_holder.get_children():
+		star.toggle_lighting(enabled)
 
 # PLACEMENT STATE MANAGEMENT
 # -------------------------------------------------
@@ -455,9 +466,17 @@ func debris_spawned(debris : Debris) -> void:
 
 func vertical_unfolder_unfolded(unfolder: VerticalUnfold) -> void:
 	click_SFX.play()
+	option_panels.hide()
 	for v_unfold: VerticalUnfold in action_bar.get_node("HBox").get_children():
 		if not v_unfold.folded and v_unfold != unfolder:
 			v_unfold.toggle_fold()
+	
+	var all_folded : bool = true
+	for v_unfold: VerticalUnfold in action_bar.get_node("HBox").get_children():
+		if not v_unfold.folded:
+			all_folded = false
+	if all_folded:
+		option_panels.show()
 
 func _on_planet_settings_body_mass_changed() -> void:
 	update_gravity_grid(celestial_bodies)

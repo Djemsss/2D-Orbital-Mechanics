@@ -477,21 +477,16 @@ mouse_filter = 2
 script = ExtResource("8_uy40c")
 world = NodePath("../../..")
 
-[node name="General" type="Panel" parent="CanvasLayer/Control/OptionPanels"]
+[node name="General" type="PanelContainer" parent="CanvasLayer/Control/OptionPanels"]
 custom_minimum_size = Vector2(160, 240)
 layout_mode = 1
 offset_top = 120.0
 offset_right = 160.0
-offset_bottom = 280.0
+offset_bottom = 360.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_w2mg1")
 
 [node name="VBox" type="VBoxContainer" parent="CanvasLayer/Control/OptionPanels/General"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 theme_override_constants/separation = 0
 
 [node name="Title" type="Label" parent="CanvasLayer/Control/OptionPanels/General/VBox"]
@@ -551,6 +546,23 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 10
 text = "Gravity Grid"
+vertical_alignment = 1
+
+[node name="LightingToggle" type="CheckButton" parent="CanvasLayer/Control/OptionPanels/General/VBox"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+button_pressed = true
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/OptionPanels/General/VBox/LightingToggle"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 10
+text = "Lighting Effects"
 vertical_alignment = 1
 
 [node name="TimeWarpToggle" type="Button" parent="CanvasLayer/Control/OptionPanels/General/VBox"]
@@ -638,21 +650,16 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_5es2h")
 icon = ExtResource("8_5es2h")
 expand_icon = true
 
-[node name="SatLaunch" type="Panel" parent="CanvasLayer/Control/OptionPanels"]
+[node name="SatLaunch" type="PanelContainer" parent="CanvasLayer/Control/OptionPanels"]
 custom_minimum_size = Vector2(160, 120)
 layout_mode = 1
-offset_top = 376.0
+offset_top = 416.0
 offset_right = 160.0
-offset_bottom = 496.0
+offset_bottom = 536.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_w2mg1")
 
 [node name="VBox" type="VBoxContainer" parent="CanvasLayer/Control/OptionPanels/SatLaunch"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 theme_override_constants/separation = 0
 
 [node name="Title" type="Label" parent="CanvasLayer/Control/OptionPanels/SatLaunch/VBox"]
@@ -1008,6 +1015,7 @@ volume_db = -10.0
 [connection signal="toggled" from="CanvasLayer/Control/OptionPanels/General/VBox/ContinuousPlacementToggle" to="CanvasLayer/Control/OptionPanels" method="_on_continuous_placement_toggle_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/OptionPanels/General/VBox/TrailsToggle" to="CanvasLayer/Control/OptionPanels" method="_on_trails_toggle_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/OptionPanels/General/VBox/GravityGridToggle" to="CanvasLayer/Control/OptionPanels" method="_on_gravity_grid_toggle_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/OptionPanels/General/VBox/LightingToggle" to="CanvasLayer/Control/OptionPanels" method="_on_lighting_toggle_toggled"]
 [connection signal="pressed" from="CanvasLayer/Control/OptionPanels/General/VBox/TimeWarpToggle" to="CanvasLayer/Control/OptionPanels" method="_on_time_warp_toggle_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/OptionPanels/General/VBox/ClearAllToggle/ClearAllButton" to="CanvasLayer/Control/OptionPanels" method="_on_clear_all_button_pressed"]
 [connection signal="toggled" from="CanvasLayer/Control/OptionPanels/SatLaunch/VBox/AutoOrbitsToggle" to="CanvasLayer/Control/OptionPanels" method="_on_auto_orbits_toggle_toggled"]

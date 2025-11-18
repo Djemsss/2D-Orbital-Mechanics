@@ -60,6 +60,9 @@ func select() -> void:
 func unselect() -> void:
 	edit_tools.hide()
 
+func toggle_lighting(enabled : bool) -> void:
+	light.enabled = enabled
+	light2.enabled = enabled
 
 # SIGNAL CALLBACKS
 # -------------------------------------------------
